@@ -2075,11 +2075,15 @@
 			ul.feature-icons li {
 				text-decoration: none;
 				display: inline-block;
-				margin: 0 0 1.6875em 0;
+				margin: 0 0 0.35em 0;
 				padding: 0.35em 0 0 3.5em;
+				
+				/* margin: 0 0 1.6875em 0;
+				padding: 0.35em 0 0 3.5em; */
+				
 				position: relative;
 				vertical-align: top;
-				width: 48%;
+				width: 100%;
 			}
 
 				ul.feature-icons li:before {
