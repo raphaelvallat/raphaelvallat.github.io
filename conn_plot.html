@@ -51,19 +51,66 @@
 
 						<section>
 							<header>
-								<h3>CONN Toolbox: Extract and plot ROI-to-ROI correlation matrix</h3>
-								<p>A guide to extract and plot connectivity matrices directly from CONN results folder</p>
+								<h3>CONN Toolbox: Extract and plot ROI-to-ROI connectivity matrix</h3>
 							</header>
 						</section>
 						
 						<section>
-							<h3>Introduction</h3>
-								<h5>Blockquote</h5>
-								<blockquote>Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan faucibus. Vestibulum ante ipsum primis in faucibus lorem ipsum dolor sit amet nullam adipiscing eu felis.</blockquote>
-								<h5>Preformatted</h5>
-								<pre><code>i = 0;
-								</code></pre>
+						
+						<p align="justify">The <a href="https://www.nitrc.org/projects/conn"> CONN toolbox </a> is a very efficient MATLAB-based tool to perform functional connectivity analysis and I've been an enthusiastic user ever since I discovered it. 	
+
+						
+						
+						</p>
+						
+						<ul class="feature-icons"><li class="fa-code">A full version of the MATLAB scripts used can be found on my <a href="https://github.com/raphaelvallat/NiTools/tree/master/conn_correl_mat">GitHub repository</a></li></ul>
+						
 						</section>
+						
+						<hr />
+						<span class="image fit"><img src="images/correl_mat.png" alt="" />
+						<figcaption>Dorsal Attention Network correlation matrix (Z values)</figcaption>
+						</span>
+						
+						<hr />
+						
+						<h4>Import data from ROI.mat file</h4>
+						<p>CONN automatically creates a ROI.mat file in CONN_ANA_NAME/results/secondlevel/FIRSTLEVEL_NAME/GROUP/SESSION/ folder when cliking the "results explorer" button in the bottom left of the second-level results interface.</p>
+						
+						<pre><code>
+load([corr_folder 'ROI.mat']);        
+
+numROI  	= size(ROI, 2);
+corr_name 	= ROI(1).names(1:numROI);
+
+corr_h   	= [];   % Beta value
+corr_F  	= [];   % T or F value
+corr_p   	= [];   % One-tailed p value
+
+for i = 1:numROI
+	corr_h = [ corr_h ; ROI(i).h(1:numROI) ];
+	corr_F = [ corr_F ; ROI(i).F(1:numROI) ];
+	corr_p = [ corr_p ; ROI(i).p(1:numROI) ];
+end			
+						</code></pre>
+
+						<hr />
+						<h4>Export to CSV</h4>
+						<pre><code>
+corr_name2 	= strrep(corr_name, '-', '_');      % array2table does not work with '-' in var names
+T_h        	= array2table(corr_h, 'RowNames', corr_name2, 'VariableNames', corr_name2);
+T_F        	= array2table(corr_F, 'RowNames', corr_name2, 'VariableNames', corr_name2);
+T_p        	= array2table(corr_p, 'RowNames', corr_name2, 'VariableNames', corr_name2);
+
+writetable( T_h, [corr_folder 'beta_' corr_net '_' corr_group '_' corr_run '.csv'], 'WriteVariableNames', true, 'WriteRowNames', true, 'delimiter', 'semi' );
+writetable( T_F, [corr_folder 'F_' corr_net '_' corr_group '_' corr_run '.csv'], 'WriteVariableNames', true, 'WriteRowNames', true, 'delimiter', 'semi');
+writetable( T_p, [corr_folder 'p_' corr_net '_' corr_group '_' corr_run '.csv'], 'WriteVariableNames', true, 'WriteRowNames', true, 'delimiter', 'semi');
+						</code></pre>
+						
+						<hr />
+						<p>We obtain the following connectivity matrix in CSV format</p>
+						
+						<span class="image fit"><img src="images/tutorials/correl_mat_txt.png" alt="" /></span>
 
 					</div>
 
