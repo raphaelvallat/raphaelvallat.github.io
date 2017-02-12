@@ -57,26 +57,43 @@
 						
 						<section>
 						
-						<p align="justify">The <a href="https://www.nitrc.org/projects/conn"> CONN toolbox </a> is a very efficient MATLAB-based tool to perform functional connectivity analysis and I've been an enthusiastic user ever since I discovered it. 	
+						<p align="justify">The <a href="https://www.nitrc.org/projects/conn"> CONN toolbox </a> is a very efficient MATLAB-based tool to perform functional connectivity analysis and I've been an enthusiastic user ever since I discovered it.
+						The present tool is born from pratical needs during the analysis of ROI-to-ROI second-level results in CONN, which can be tedious at time. Notably, CONN does not allow (yet) visualization of within or between-network connectivity matrix.
+						This tool is intended to facilitate the 1) extraction of connectivity matrices from CONN ROI.mat files and 2) the plotting of these matrices into graphical format
+						
+						<br>
+						In the present tutorial I will use the 7 nodes of the Salience network (implemented in CONN v17.a) as ROI in resting-state data from 4 participants.
 
-						
-						
 						</p>
 						
-						<ul class="feature-icons"><li class="fa-code">A full version of the MATLAB scripts used can be found on my <a href="https://github.com/raphaelvallat/NiTools/tree/master/conn_correl_mat">GitHub repository</a></li></ul>
+						<ul class="feature-icons"><li class="fa-code">A full version of the MATLAB scripts used can be found on my <a href="https://github.com/raphaelvallat/conn_correl_mat">GitHub repository</a></li></ul>
 						
 						</section>
 						
 						<hr />
-						<span class="image fit"><img src="images/correl_mat.png" alt="" />
-						<figcaption>Dorsal Attention Network correlation matrix (Z values)</figcaption>
+						<span class="image fit"><img src="images/tutorials/conn_correl_mat/correl_mat.png" alt="" />
+						<figcaption>Salience network connectivity matrices (beta, T and p-values)</figcaption>
 						</span>
 						
 						<hr />
 						
-						<h4>Import data from ROI.mat file</h4>
-						<p>CONN automatically creates a ROI.mat file in CONN_ANA_NAME/results/secondlevel/FIRSTLEVEL_NAME/GROUP/SESSION/ folder when cliking the "results explorer" button in the bottom left of the second-level results interface.</p>
+						<h4>ROI.mat structure</h4>
+
+						<p align="justify">CONN ROI.mat file is created when clicking "Results Explorer" in the bottom left of the CONN 2nd-level interface. This MAT structure can be found in the folder <i>/results/secondlevel/FIRSTLEVEL_NAME/GROUP/SESSION/</i> and contains the following fields <a href="https://www.nitrc.org/forum/message.php?msg_id=15500">(see this post)</a>
 						
+						<li><b>names:</b> names of the source ROIs</li>
+						<li><b>h:</b> beta values displayed in CONN 2nd-level interface, which corresponds to the  average Fischer transformed pairwise correlations of specified contrast</li>
+						<li><b>F:</b> statistical values, depending on the statistical test (see statsname field)</li>
+						<li><b>p:</b> one-tailed p-values</li>
+						
+						</p>
+
+
+						<hr />
+						
+						<h4>Extracting connectivity matrix</h4>
+						<p>The following code extract all the pairwise correlations in the ROI.mat file </p>
+		
 						<pre><code>
 load([corr_folder 'ROI.mat']);        
 
@@ -84,7 +101,7 @@ numROI  	= size(ROI, 2);
 corr_name 	= ROI(1).names(1:numROI);
 
 corr_h   	= [];   % Beta value
-corr_F  	= [];   % T or F value
+corr_F  	= [];   % Statistic value
 corr_p   	= [];   % One-tailed p value
 
 for i = 1:numROI
@@ -96,6 +113,7 @@ end
 
 						<hr />
 						<h4>Export to CSV</h4>
+						<p>Now we can export it to CSV file (by default in the same folder as ROI.mat file</p>
 						<pre><code>
 corr_name2 	= strrep(corr_name, '-', '_');      % array2table does not work with '-' in var names
 T_h        	= array2table(corr_h, 'RowNames', corr_name2, 'VariableNames', corr_name2);
@@ -108,11 +126,59 @@ writetable( T_p, [corr_folder 'p_' corr_net '_' corr_group '_' corr_run '.csv'],
 						</code></pre>
 						
 						<hr />
-						<p>We obtain the following connectivity matrix in CSV format</p>
+						<p>This way we obtain the following connectivity matrix</p>
 						
-						<span class="image fit"><img src="images/tutorials/correl_mat_txt.png" alt="" /></span>
+						<span class="image fit"><img src="images/tutorials/conn_correl_mat/correl_mat_txt.png" alt="" /></span>
+						
+						<hr />
+						
+						<h4>Plotting brain connectivity matrix</h4>
+						<p align="justify">Once we extracted and exported the connectivity matrix in text format, we can plot it using Matlab imagesc command.I will detail here for beta values (corr_h) but if you want to plot F or p values you can check the full script on my <a href="https://github.com/raphaelvallat/conn_correl_mat">GitHub repository</a></p>
+						
+						<pre><code>
+% Remove upper triangle + diagonal
+corr = tril(corr, -1)
 
-					</div>
+
+% Start plotting
+fig = figure;
+set(gcf,'Units','inches', 'Position',[0 0 6 4])
+
+im = imagesc(corr, clim );
+
+clim = [ 0 1 ];
+colormap(flipud(hot(10)));
+
+h = colorbar('eastoutside');
+xlabel(h, 'h', 'FontSize', 14);
+
+
+% Title, axis
+title('Salience Network', 'FontSize', 14);
+set(gca, 'XTick', (1:numROI));
+set(gca, 'YTick', (1:numROI));
+set(gca, 'Ticklength', [0 0])
+grid off
+box off
+
+% Labels
+set(gca, 'XTickLabel', corr_name, 'XTickLabelRotation', 0);
+set(gca, 'YTickLabel', corr_name);
+				</code></pre>
+				
+				<span class="image fit"><img src="images/tutorials/conn_correl_mat/Salience.png" alt="" /></span>
+
+				<hr />
+				<p>With some adaptation, the previous code also works for between-network connectivity matrix  (blue denotes negative correlations)</p>
+				
+				<span class="image fit"><img src="images/tutorials/conn_correl_mat/ACN.png" alt="" /></span>
+				
+				
+				<hr />
+				
+				<h4>Plotting with Python</h4>
+				<p>In progress..</p>
+				</div>
 
 				<!-- Footer -->
 					<section id="footer">
