@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'sitemap_generator'
 
-SitemapGenerator::Sitemap.default_host = 'http://raphaelvallat.github.io'
+SitemapGenerator::Sitemap.default_host = 'https://raphaelvallat.github.io'
 SitemapGenerator::Sitemap.create do
   add '/index', :changefreq => 'daily', :priority => 0.9
   add '/conn_plot', :changefreq => 'weekly'

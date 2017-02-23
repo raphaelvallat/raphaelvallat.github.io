@@ -1,0 +1,189 @@
+<!DOCTYPE HTML>
+<!--
+	Read Only by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Raphael Vallat</title>
+		<meta charset="utf-8" />
+		<meta name="description" content="Personal website of Raphael Vallat" />
+		<meta name="author" content="Raphael Vallat">
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+	</head>
+	<body>
+
+		<!-- Header -->
+			<section id="header">
+				<header>
+					<span class="image avatar"><img src="images/avatar.jpg" alt="" /></span>
+					<h1 id="logo">Raphael Vallat</h1>
+					<p>PhD student in Neuroscience <br> Lyon Neuroscience Research Center</p>
+				</header>
+				<nav id="nav">
+					<ul>
+						<li><a href="index.html#one">About</a></li>
+						<li><a href="index.html#two">Academics</a></li>
+						<li><a href="index.html#three">Publications</a></li>
+						<li><a href="index.html#four" class="active">Tutorials</a></li>
+					</ul>
+				</nav>
+				<footer>
+					<ul class="icons">
+						<!-- <li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li> -->
+						<!-- <li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li> -->
+						<!-- <li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li> -->
+						<li><a href="https://github.com/raphaelvallat" class="icon fa-github"><span class="label">Github</span></a></li>
+						<li><a href="mailto:raphael.vallat@inserm.fr" class="icon fa-envelope"><span class="label">Email</span></a></li>
+					</ul>
+				</footer>
+			</section>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+					
+					<div class="container">
+
+
+						<header>
+							<h4>How to create an EEG-like signal with Matlab</h4>
+						</header>
+						
+						
+						<p align="justify">This tutorial will show how to easily create an EEG-like simulated signal with Matlab by basically summing a lot of sines with various weighted-frequencies.</p>
+						
+						<ul class="feature-icons"><li class="fa-code">A full version of the MATLAB script used can be found on my <a href="https://github.com/raphaelvallat/eeg_generator">GitHub repository</a></li></ul>
+						
+
+						<span class="image fit"><img src="images/tutorials/eeg_gen/signal.png" alt="" />
+						<figcaption>Example of an EEG-like simulated signal with a peak frequency of 10 Hz.</figcaption>
+						</span>
+												
+						<hr />
+						
+						<h3>Define signal properties</h3>
+						<p>First, we define the number of sines we want to sum, the sampling rate and the duration (in seconds) of the signal.</p>
+<pre><code>
+f       	= [];
+f.nSines  	= 100000;                 % Number of sines
+f.s_fs    	= 100;                    % Sampling rate
+f.sec     	= 10;                     % Signal length (sec)
+f.N       	= f.sec * f.s_fs;
+f.t       	= (1:f.N)/ f.s_fs;        % Time vector
+</code></pre>
+
+						<p>Then define the frequency-band we want to include in the signal (For illustration purpose, I only included frequencies from 0.5 to 18 Hz). Note that the max frequency is defined by the Nyquist frequency as half your original sampling rate (i.e. 100 / 2 = 50 Hz)</p>
+							
+<pre><code>
+% Define frequency-band
+f.PFreq = 10;
+f.delta = [ 0.5 4 ];
+f.theta = [ 4 8 ];
+f.alpha = [ 8 12 ];
+f.beta  = [ 12 18 ];
+</code></pre>
+
+						<hr />
+							
+						<h3>Weight frequency-band amplitude</h3>
+						<p align="justify">As we have seen earlier, in a real EEG signal there is a negative asymptotic relationship between the frequency in Hz and its magnitude. The trick here is to create a non-linearly spaced vector of frequencies, meaning that for example the frequencies corresponding to Delta waves (0.5-4 Hz) will represent 40 % of the final frequency vector whereas the beta frequencies (12-18 Hz) will only represent 15% of the final vector.</p>
+
+<pre><code>
+% Create non-linearly spaced frequency vector
+vdv	= @(s,e,d) sort([linspace(s(1),e(1),d(1))  linspace(s(2),e(2),d(2)) , ...
+	  linspace(s(3),e(3),d(3)) linspace(s(4),e(4),d(4)) ]);
+s 	= [ f.delta(1) f.theta(1) f.alpha(1) f.beta(1) ];
+e 	= [ f.delta(2) f.theta(2) f.alpha(2) f.beta(2) ];
+d 	= [ 0.4*f.nSines 0.25*f.nSines 0.2*f.nSines 0.15*f.nSines ];
+Fs 	= vdv(s,e,d)';
+</code></pre>		
+				
+						<h3>Peak frequency</h3>
+						<p align="justify">Now let's say we want our signal to have a peak frequency of 10 Hz, which usually corresponds to a state of rested wakefulness. First, we create a Gaussian random weight vector of amplitude which contains values between -1 and 1. This is critical to give the "chaotic" aspect of the EEG signal. Then, we find the weights for the frequencies around the desired peak frequency and convert them to absolute number (in other words, increase synchronisation between the sines).</p>
+						
+<pre><code>
+f.w  		= randn(f.nSines, 1);
+idx_PFreq 	= find(f.Fs > f.PFreq-0.01 & f.Fs < f.PFreq+0.01);
+f.w(idx_PFreq) 	= abs(f.w(idx_PFreq));
+</code></pre>	
+
+						<h3>Sum the sines</h3>
+						<p>Now we can sum up all the sines and convert the resulting signal to Z-score.</p>
+						
+<pre><code>
+f.Sines 	= f.w*ones(size(f.t)).*sin(2*pi*f.Fs*f.t);
+f.signal 	= zscore(sum(f.Sines));
+</code></pre>	
+
+						<h3>Plot signal</h3>
+						<p>And finally plot the EEG-like signal in time domain (see my <a href="https://github.com/raphaelvallat/eeg_generator">GitHub repository</a>)</p>
+						
+<pre><code>
+figure;
+set(gcf,'Units','inches', 'Position',[0 0 10 4])
+plot(f.t, f.signal)
+xlabel('Time (sec)');
+ylim( [-10 10] );
+box off
+grid off
+</code></pre>	
+
+
+						<span class="image fit"><img src="images/tutorials/eeg_gen/signal.png" alt="" />
+						
+						</span>
+						
+						<p>The same after adding some higher frequencies in the spectrum (up to 100 Hz)</p>
+
+						<span class="image fit"><img src="images/tutorials/eeg_gen/signal_magnitude_full.png" alt="" />
+						
+						</span>
+						
+						
+						<p>As you can see from the image below that <a href="https://fr.mathworks.com/company/newsletters/articles/teaching-medical-instrumentation-at-the-university-of-washington.html">I found on Internet</a> of a 2-seconds "real" neuron-generated EEG signal, we are actually not so far from the original</p>
+						
+						<span class="image fit"><img src="https://fr.mathworks.com/content/mathworks/fr/fr/company/newsletters/articles/teaching-medical-instrumentation-at-the-university-of-washington/_jcr_content/mainParsys/image_0.img.gif/1469941515253.gif" alt="" />
+						</span>
+						
+						
+						<p>Slow-wave sleep-like simulated EEG (High amplitude delta + mixed higher frequencies) </p>
+
+						<span class="image fit"><img src="images/tutorials/eeg_gen/signal_sws.png" alt="" />
+						
+						</span>
+												
+						<hr />
+						
+						<p>Ok this is it. Please let me know if you have any comment or idea on how to improve this signal generation!</p>
+						
+				</div>
+
+				<!-- Footer -->
+					<section id="footer">
+						<div class="container">
+							<ul class="copyright">
+								<li>&copy; Raphael Vallat </li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li><li>Banner image: Nicolas Roerich</li>
+							</ul>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollzer.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>

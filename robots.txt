@@ -1,1 +1,1 @@
-Sitemap: http://raphaelvallat.github.io/public/sitemap.xml.gz
+Sitemap: https://raphaelvallat.github.io/public/sitemap.xml.gz
