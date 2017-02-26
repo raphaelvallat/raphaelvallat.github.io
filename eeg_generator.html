@@ -87,20 +87,20 @@ f.PFreq = 10;
 f.delta = [ 0.5 4 ];
 f.theta = [ 4 8 ];
 f.alpha = [ 8 12 ];
-f.beta  = [ 12 18 ];
+f.sigma = [ 12 18 ];
 </code></pre>
 
 						<hr />
 							
 						<h3>Weight frequency-band amplitude</h3>
-						<p align="justify">As we have seen earlier, in a real EEG signal there is a negative asymptotic relationship between the frequency in Hz and its magnitude. The trick here is to create a non-linearly spaced vector of frequencies, meaning that for example the frequencies corresponding to Delta waves (0.5-4 Hz) will represent 40 % of the final frequency vector whereas the beta frequencies (12-18 Hz) will only represent 15% of the final vector.</p>
+						<p align="justify">As we have seen earlier, in a real EEG signal there is a negative asymptotic relationship between the frequency in Hz and its magnitude. The trick here is to create a non-linearly spaced vector of frequencies, meaning that for example the frequencies corresponding to Delta waves (0.5-4 Hz) will represent 40 % of the final frequency vector whereas the sigma frequencies (12-18 Hz) will only represent 15% of the final vector.</p>
 
 <pre><code>
 % Create non-linearly spaced frequency vector
 vdv	= @(s,e,d) sort([linspace(s(1),e(1),d(1))  linspace(s(2),e(2),d(2)) , ...
 	  linspace(s(3),e(3),d(3)) linspace(s(4),e(4),d(4)) ]);
-s 	= [ f.delta(1) f.theta(1) f.alpha(1) f.beta(1) ];
-e 	= [ f.delta(2) f.theta(2) f.alpha(2) f.beta(2) ];
+s 	= [ f.delta(1) f.theta(1) f.alpha(1) f.sigma(1) ];
+e 	= [ f.delta(2) f.theta(2) f.alpha(2) f.sigma(2) ];
 d 	= [ 0.4*f.nSines 0.25*f.nSines 0.2*f.nSines 0.15*f.nSines ];
 Fs 	= vdv(s,e,d)';
 </code></pre>		
