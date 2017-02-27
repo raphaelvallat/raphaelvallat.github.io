@@ -38,6 +38,7 @@
 						<!-- <li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li> -->
 						<!-- <li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li> -->
 						<li><a href="https://github.com/raphaelvallat" class="icon fa-github"><span class="label">Github</span></a></li>
+						<li><a href="http://linkedin.com/in/raphael-vallat-023790139" class="icon fa-linkedin"><span class="label">LinkedIn</span></a></li>
 						<li><a href="mailto:raphael.vallat@inserm.fr" class="icon fa-envelope"><span class="label">Email</span></a></li>
 					</ul>
 				</footer>
@@ -54,25 +55,165 @@
 
 						<header>
 							<h4>CONN Toolbox</h4>
-							<h3>Plot denoised BOLD timeseries of a pair of ROIs</h3>
+							<h3>Plot denoised BOLD timeseries of 2 ROIs</h3>
 						</header>
 						
-						
-						<p align="justify">In this tutorial we will see how to 1) plot the mean BOLD denoised timeseries of two ROIs and 2) compute correlation coefficient between the two timeseries. </p>
+						<p>A simple script that I think could be useful to others users of the CONN Toolbox.</p>
 						
 						<ul class="feature-icons">
-						<li class="fa-code">A full version of the MATLAB script used can be found on my <a href="https://github.com/raphaelvallat/conn_tools">GitHub repository</a></li></ul>
-						<ul class="feature-icons">
-						<li class="fa-spinner">The tutorial is not finished yet..!</li>
-						</ul>
-						
+						<li class="fa-code">The full script can be downloaded on my <a href="https://github.com/raphaelvallat/conn_tools">GitHub repository</a></li></ul>
 
 						<span class="image fit"><img src="images/tutorials/conn_ts/TS_example.png" alt="" />
-						<figcaption>BOLD denoised timeseries of Medial Prefontal Cortex (MPFC) and Posterior Cingulate Cortex (PCC) ROIs from the Default Mode Network</figcaption>
 						</span>
 						
 						<hr />	
+						
+						<h4>Define analysis info</h4>
+						
+						<p>There are 3 fields you need to fill in the code below. 
+						First, the main path to your CONN/results/preprocessing folder which contains the denoised time-series of all the ROIs. Second, if you have several session (i.e. pre / post resting-state scans), enter the number of the desired session or put 0 for a temporal concatenation of all sessions. Third, enter the number of subjects in your dataset and finally, type the name - as they appear in CONN - of the two ROIs you want to plot. In this example I will used two classic regions of the Default Mode Network: the medial prefrontal cortex and precuneous. If you want some more details on the different output files of the CONN toolbox, I strongly recommend <a href="https://www.nitrc.org/forum/message.php?msg_id=18633">this very exhaustive post</a> on the CONN toolbox forum.</p>
+						
+						<pre><code>
+<font color="67a888">% Info is the main structure containing all analysis informations</font>
+Info            = [];       
+Info.wdir       = 'C:\PhD\fMRI\CONN\conn_39s_preproc\results\preprocessing\';
+Info.session    = 1;        % 0 for all sessions, 1=session1, 2=session2, etc...
+Info.nsub       = 39;       % Total number of subjects
+
+<font color="67a888">% ROI is the main structure containing ROI names, data</font>
+ROI             = [];       
+ROI.ROI1_data   = [];
+ROI.ROI2_data   = [];
+
+<font color="67a888">% Select pair of ROIs</font>
+ROI.ROI1_name   = 'NetDMN.MPFC';
+ROI.ROI2_name   = 'NetDMN.PC';
+
+<font color="67a888">% Define outpath and outfilename</font>
+Info.outdir     = pwd;
+Info.outfile    = [ Info.outdir '\TS_' ROI.ROI1_name  '_' ROI.ROI2_name '_RUN' num2str(Info.session) '.png' ];
+</code></pre>
 	
+					<hr />
+					<h4>Import data</h4>
+					<p>Once this is done, the next step is to load the ROI mat file of each subject and find the two time-series of interest</p>
+<pre><code>
+for i=1:Info.nsub
+    
+    <font color="67a888">% Loading .MAT file</font>   
+    matfile = [ 'ROI_Subject0', num2str(i, '%02i') ,'_Condition000.mat' ];
+    
+    <font color="67a888">%fprintf('\nLoading:\t %s', matfile);</font>
+    
+    load([Info.wdir matfile]);
+    
+    ROI.names   = names;
+    ROI.dsess   = data_sessions;
+    
+    <font color="67a888">% Find index of selected ROIs</font>
+    ROI.ROI1_idx    = find(strcmp(ROI.ROI1_name, names));
+    ROI.ROI2_idx    = find(strcmp(ROI.ROI2_name, names));
+    
+    <font color="67a888">% Extract BOLD data</font>
+    ROI.ROI1_data   = [ ROI.ROI1_data , cell2mat(data(ROI.ROI1_idx)) ];
+    ROI.ROI2_data   = [ ROI.ROI2_data , cell2mat(data(ROI.ROI2_idx)) ];
+    
+    <font color="67a888">% Select sessions</font>
+    if Info.session == 0 ;
+        ROI.cond = find(ROI.dsess);
+    else
+        ROI.cond = find(ROI.dsess == Info.session);
+    end
+    
+end
+</code></pre>
+
+					<hr />
+					
+					<h4>Compute means, sem and correlations</h4>
+					<p>Then compute the mean timeseries with its corresponding standard error of the mean as well as the correlation coefficient between the two mean time-series.</p>
+<pre><code>
+<font color="67a888">% Compute mean, std and sem</font>
+ROI.ROI1_mean   = mean(ROI.ROI1_data, 2);
+ROI.ROI1_std    = std(ROI.ROI1_data, 0, 2);
+ROI.ROI1_sem    = ROI.ROI1_std / sqrt(Info.nsub);
+
+ROI.ROI2_mean   = mean(ROI.ROI2_data, 2);
+ROI.ROI2_std    = std(ROI.ROI2_data, 0, 2);
+ROI.ROI2_sem    = ROI.ROI2_std / sqrt(Info.nsub);
+
+<font color="67a888">% Correlation between mean timeseries</font>
+[rho_mean, pval_mean] = corr(ROI.ROI1_mean(ROI.cond), ROI.ROI2_mean(ROI.cond));
+</code></pre>
+			
+			<p>By default CONN toolbox applies a Fisher transform to all the R correlation values in order to homogenize the variance. If you prefer to compute the Z fisher-transformed value of your correlation coefficient, simply use the <b>atanh(r)</b> function of Matlab.
+
+			<hr />
+			
+			<h4>Plot</h4>
+			<h5>Mean time-series</h5>
+<pre><code>
+<font color="67a888">% Create plot variables</font>
+ROI.x       = [ 1:length(ROI.cond) ]';
+ROI.ROI1_Y  = ROI.ROI1_mean(ROI.cond,:);
+ROI.ROI2_Y  = ROI.ROI2_mean(ROI.cond,:);
+ROI.ROI1_dy = ROI.ROI1_sem(ROI.cond, :);
+ROI.ROI2_dy = ROI.ROI2_sem(ROI.cond, :);
+
+set(0,'defaultfigurecolor',[ 1 1 1 ])
+set(0,'DefaultAxesFontSize', 10)
+fig = figure;
+set(gcf,'Units','inches', 'Position',[0 0 6 3])
+line_color = [ 0.1 0.3 0.2 ; 0.8 0.3 0.1 ];
+set(gca, 'ColorOrder', line_color, 'NextPlot', 'replacechildren');
+
+<font color="67a888">% Plot average ROI BOLD signal</font>
+plot(ROI.x, ROI.ROI1_Y, ROI.x, ROI.ROI2_Y, 'LineWidth', 1.5)
+hold on
+legend(ROI.ROI1_name, ROI.ROI2_name, 'Location', 'northeast')
+legend('boxoff')
+</code></pre>
+
+			<h5>Semi-transparent continuous error bar</h5>
+<pre><code>
+if Info.nsub > 1
+    fill([ROI.x;flipud(ROI.x)],[ROI.ROI1_Y-ROI.ROI1_dy;flipud(ROI.ROI1_Y+ROI.ROI1_dy)],line_color(1,:),'linestyle','none', 'FaceAlpha', .2);
+    fill([ROI.x;flipud(ROI.x)],[ROI.ROI2_Y-ROI.ROI2_dy;flipud(ROI.ROI2_Y+ROI.ROI2_dy)],line_color(2,:),'linestyle','none', 'FaceAlpha', .2);
+end
+</code></pre>
+
+			<h5>Annotate the correlation value</h5>
+<pre><code>
+dim = [.2 .2 .3 .1];
+str = [ 'r = ', num2str(round(rho_mean, 2), '%.2f'), ' ; p = ', num2str(pval_mean), ' ; n = ', num2str(Info.nsub) ];
+annotation('textbox',dim,'String',str,'FitBoxToText','on', 'EdgeColor', 'none', 'FontWeight', 'bold', 'FontAngle', 'italic');
+</code></pre>		
+
+			<h5>Set axis properties</h5>
+			
+<pre><code>
+y_lim = [ -0.2 0.2 ];
+ylim(y_lim);
+xlim([0 length(ROI.cond)]);
+%set(gca, 'XColor', 'w');   % Mask x-axis
+ylabel('BOLD signal');
+xlabel('Time (TR)');
+set(gca, 'XTick', [ 0:20:length(ROI.cond) ]);
+grid off
+box off
+
+<font color="67a888">% Savefig 600 dpi</font>
+fig.PaperPositionMode = 'auto';
+print(Info.outfile,'-dpng','-r600')
+
+clearvars -except ROI Info
+</code></pre>		
+
+			<p>And that's it!</p>
+			
+			<span class="image fit"><img src="images/tutorials/conn_ts/TS_example.png" alt="" />
+			</span>
+			
 				</div>
 
 				<!-- Footer -->
