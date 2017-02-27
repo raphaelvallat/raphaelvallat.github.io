@@ -20,7 +20,7 @@
 		<!-- Header -->
 			<section id="header">
 				<header>
-					<span class="image avatar"><img src="images/avatar.jpg" alt="" /></span>
+					<!-- <span class="image avatar"><img src="images/avatar.jpg" alt="" /></span> -->
 					<h1 id="logo">Raphael Vallat</h1>
 					<p>PhD student in Neuroscience <br> Lyon Neuroscience Research Center</p>
 				</header>
@@ -144,10 +144,10 @@ end
 
 <font color="67a888">% Compute Bonferroni and FDR correction
 % conn_fdr function is in conn main folder</font>
-alpha_bonf            			= 0.05 / ((numROI)*(numROI-1)/2);
+alpha_bonf            		= 0.05 / ((numROI)*(numROI-1)/2);
 vector_fdr                      = nonzeros(triu(corr_info.corr_p)');
 vector_fdr(isnan(vector_fdr))   = [];
-corr_p_fdr            			= conn_fdr(vector_fdr); 
+corr_p_fdr            		= conn_fdr(vector_fdr); 
 
 <font color="67a888">% WRITE OUTPUT</font>
 fprintf('\nANALYSIS INFO');

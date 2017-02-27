@@ -20,7 +20,7 @@
 		<!-- Header -->
 			<section id="header">
 				<header>
-					<span class="image avatar"><img src="images/avatar.jpg" alt="" /></span>
+					<!-- <span class="image avatar"><img src="images/avatar.jpg" alt="" /></span> -->
 					<h1 id="logo">Raphael Vallat</h1>
 					<p>PhD student in Neuroscience <br> Lyon Neuroscience Research Center</p>
 				</header>
@@ -58,7 +58,7 @@
 							<h3>Plot denoised BOLD timeseries of 2 ROIs</h3>
 						</header>
 						
-						<p>A simple script that I think could be useful to others users of the CONN Toolbox.</p>
+						<p>A simple script to plot the BOLD denoised time-series of two specified ROIs from CONN Toolbox ROI.mat file</p>
 						
 						<ul class="feature-icons">
 						<li class="fa-code">The full script can be downloaded on my <a href="https://github.com/raphaelvallat/conn_tools">GitHub repository</a></li></ul>
@@ -70,8 +70,12 @@
 						
 						<h4>Define analysis info</h4>
 						
-						<p>There are 3 fields you need to fill in the code below. 
-						First, the main path to your CONN/results/preprocessing folder which contains the denoised time-series of all the ROIs. Second, if you have several session (i.e. pre / post resting-state scans), enter the number of the desired session or put 0 for a temporal concatenation of all sessions. Third, enter the number of subjects in your dataset and finally, type the name - as they appear in CONN - of the two ROIs you want to plot. In this example I will used two classic regions of the Default Mode Network: the medial prefrontal cortex and precuneous. If you want some more details on the different output files of the CONN toolbox, I strongly recommend <a href="https://www.nitrc.org/forum/message.php?msg_id=18633">this very exhaustive post</a> on the CONN toolbox forum.</p>
+						<p> 
+						<ul>
+						<li><b>Info.wdir:</b> path to your CONN/results/preprocessing folder which contains the denoised time-series of all the ROIs (see <a href="https://www.nitrc.org/forum/message.php?msg_id=18633">this post</a> for a exhaustive review of CONN output files.</li><br>
+						<li><b>Info.session:</b> if you have several session (i.e. pre / post resting-state scans), enter the number of the desired session or put 0 for a temporal concatenation of all sessions.</li><br>
+						<li><b>Info.nsub:</b> number of subjects</li><br>
+						<li><b>ROI.ROIX_name:</b> name of the ROIs you want to plot, as they appear in CONN Toolbox. In this example I am using two classic nodes of the default mode network, i.e. the medial prefrontal cortex and precuneous.</li><br></p>
 						
 						<pre><code>
 <font color="67a888">% Info is the main structure containing all analysis informations</font>
