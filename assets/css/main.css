@@ -2070,6 +2070,7 @@
 		ul.feature-icons {
 			list-style: none;
 			padding-left: 0;
+
 		}
 
 			ul.feature-icons li {
@@ -2077,10 +2078,10 @@
 				display: inline-block;
 				margin: 0 0 0.35em 0;
 				padding: 0.35em 0 0 3.5em;
-				
+				text-align: justify;
+
 				/* margin: 0 0 1.6875em 0;
 				padding: 0.35em 0 0 3.5em; */
-				
 				position: relative;
 				vertical-align: top;
 				width: 100%;
