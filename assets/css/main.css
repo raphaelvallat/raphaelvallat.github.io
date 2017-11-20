@@ -1555,8 +1555,8 @@
 	}
 
 	body, input, select, textarea {
-		color: #888;
-		font-family: "Lato", sans-serif;
+		color: #6c6c6c;
+		font-family: "Roboto", sans-serif;
 		font-size: 16pt;
 		font-weight: 400;
 		line-height: 1.75em;
@@ -1578,7 +1578,7 @@
 		}
 
 	strong, b {
-		color: #777;
+		color: #4b4b4b;
 		font-weight: 700;
 	}
 
@@ -1609,11 +1609,14 @@
 	}
 
 	h3 {
+		font-family: "Merriweather Light", sans-serif;
 		font-size: 1.75em;
 		line-height: 1.5em;
 	}
 
 	h4 {
+		color: #20626b;
+		font-family: "Merriweather", sans-serif;
 		font-size: 1.25em;
 		line-height: 1.5em;
 	}
@@ -1651,10 +1654,12 @@
 		}
 
 	blockquote {
+		background: #fcfcfc;
 		border-left: solid 8px #e4e4e4;
 		font-style: italic;
 		margin: 0 0 2.25em 0;
 		padding: 0.5em 0 0.5em 2em;
+		text-align:justify;
 	}
 
 	code {
