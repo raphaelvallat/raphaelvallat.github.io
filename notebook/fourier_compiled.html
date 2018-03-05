@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8" />
-<title>fourier</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>Understanding the Fourier Transform</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
 <style type="text/css">
@@ -8451,15 +8451,15 @@ label {
 }
 /* Flexible box model classes */
 /* Taken from Alex Russell http://infrequently.org/2009/08/css-3-progress/ */
-/* This file is a compatability layer.  It allows the usage of flexible box 
+/* This file is a compatability layer.  It allows the usage of flexible box
 model layouts accross multiple browsers, including older browsers.  The newest,
 universal implementation of the flexible box model is used when available (see
-`Modern browsers` comments below).  Browsers that are known to implement this 
+`Modern browsers` comments below).  Browsers that are known to implement this
 new spec completely include:
 
     Firefox 28.0+
     Chrome 29.0+
-    Internet Explorer 11+ 
+    Internet Explorer 11+
     Opera 17.0+
 
 Browsers not listed, including Safari, are supported via the styling under the
@@ -11233,7 +11233,7 @@ div#pager .ui-resizable-handle {
   background: #f7f7f7;
   border-top: 1px solid #cfcfcf;
   border-bottom: 1px solid #cfcfcf;
-  /* This injects handle bars (a short, wide = symbol) for 
+  /* This injects handle bars (a short, wide = symbol) for
         the resize handle. */
 }
 div#pager .ui-resizable-handle::after {
@@ -11676,7 +11676,7 @@ ul.typeahead-list > li > a {
 .highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
     </style>
 <style type="text/css">
-    
+
 /* Temporary definitions which will become obsolete with Notebook release 5.0 */
 .ansi-black-fg { color: #3E424D; }
 .ansi-black-bg { background-color: #3E424D; }
@@ -11730,14 +11730,14 @@ div#notebook {
   div.cell {
     display: block;
     page-break-inside: avoid;
-  } 
-  div.output_wrapper { 
-    display: block;
-    page-break-inside: avoid; 
   }
-  div.output { 
+  div.output_wrapper {
     display: block;
-    page-break-inside: avoid; 
+    page-break-inside: avoid;
+  }
+  div.output {
+    display: block;
+    page-break-inside: avoid;
   }
 }
 </style>
@@ -11797,13 +11797,13 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="n">Fs</span> <span class="o">=</span> <span class="mi">8</span>
-<span class="n">f</span> <span class="o">=</span> <span class="mi">1</span> 
+<span class="n">f</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">duration</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">amplitude</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">phi</span> <span class="o">=</span> <span class="mi">30</span>
@@ -11829,7 +11829,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Plot the sine in the time-domain</span>
@@ -11879,7 +11879,7 @@ e<sup>jx</sup> = cos x + j sin x</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">DFT_naive</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -11888,13 +11888,13 @@ e<sup>jx</sup> = cos x + j sin x</p>
 <span class="sd">    See https://www.youtube.com/watch?v=mkGsMWi_j4Q</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">N</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    
+
     <span class="c1"># The number of frequency bins = the number of samples</span>
     <span class="n">dft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
-    
+
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
         <span class="n">dft</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">([</span><span class="n">n</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">i</span><span class="o">*</span><span class="n">k</span><span class="o">/</span><span class="n">N</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">i</span><span class="o">*</span><span class="n">k</span><span class="o">/</span><span class="n">N</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">)])</span>
-        
+
     <span class="k">return</span> <span class="n">dft</span>
 </pre></div>
 
@@ -11905,7 +11905,7 @@ e<sup>jx</sup> = cos x + j sin x</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">dft</span> <span class="o">=</span> <span class="n">DFT_naive</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
@@ -11957,7 +11957,7 @@ e<sup>jx</sup> = cos x + j sin x</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># We keep only the first half</span>
@@ -12003,7 +12003,7 @@ e<sup>jx</sup> = cos x + j sin x</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -12045,7 +12045,7 @@ e<sup>jx</sup> = cos x + j sin x</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">fft_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
@@ -12098,7 +12098,7 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The number of operations performed is: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">N</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
@@ -12138,10 +12138,12 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">mag</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dft</span><span class="o">.</span><span class="n">real</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dft</span><span class="o">.</span><span class="n">imag</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span> <span class="c1"># or np.abs(dft) / N</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">onesided</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">fac</span> <span class="o">=</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">onesided</span> <span class="o">==</span> <span class="kc">True</span> <span class="k">else</span> <span class="mi">1</span>
+<span class="n">mag</span> <span class="o">=</span>  <span class="n">fac</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dft</span><span class="o">.</span><span class="n">real</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">dft</span><span class="o">.</span><span class="n">imag</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span> <span class="c1"># or np.abs(dft) / N</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">mag</span><span class="p">)</span>
 </pre></div>
 
@@ -12159,8 +12161,8 @@ True
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[0.         0.         4.99999825 0.         0.         0.
- 0.         0.         0.        ]
+<pre>[0.        0.        9.9999965 0.        0.        0.        0.
+ 0.        0.       ]
 </pre>
 </div>
 </div>
@@ -12180,7 +12182,7 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[28]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">mag</span><span class="p">)</span>
@@ -12205,7 +12207,7 @@ True
 
 
 <div class="output_png output_subarea ">
-<img src="data:image/png;base64,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
+<img src="data:image/png;base64,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
 "
 >
 </div>
@@ -12227,13 +12229,11 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Now compute the one-sided Power Spectral Density</span>
-<span class="n">onesided</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">fac</span> <span class="o">=</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">onesided</span> <span class="o">==</span> <span class="kc">True</span> <span class="k">else</span> <span class="mi">1</span>
-<span class="n">psd</span> <span class="o">=</span> <span class="p">(</span><span class="n">fac</span> <span class="o">*</span> <span class="n">mag</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="n">psd</span> <span class="o">=</span> <span class="n">mag</span> <span class="o">**</span> <span class="mi">2</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">psd</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 </pre></div>
 
@@ -12271,7 +12271,7 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="k">import</span> <span class="n">periodogram</span>
@@ -12313,13 +12313,12 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">spec</span> <span class="o">=</span> <span class="n">psd</span> <span class="o">/</span> <span class="n">duration</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
 <span class="n">_</span><span class="p">,</span> <span class="n">psd_spec_scipy</span> <span class="o">=</span> <span class="n">periodogram</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="s1">&#39;spectrum&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">psd_spec_scipy</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">spec</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">psd_spec_scipy</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">psd_spec_scipy</span><span class="p">,</span> <span class="n">spec</span><span class="p">))</span>
 </pre></div>
 
@@ -12337,9 +12336,7 @@ True
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[ 0.          0.         49.99996503  0.          0.          0.
-  0.          0.          0.        ]
-[ 0.  0. 50.  0.  0.  0.  0.  0.  0.]
+<pre>[ 0.  0. 50.  0.  0.  0.  0.  0.  0.] [ 0.  0. 50.  0.  0.  0.  0.  0.  0.]
 True
 </pre>
 </div>
@@ -12360,7 +12357,7 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># We only keep the non-zero values to avoid &quot;RuntimeWarning: divide by zero encountered in log10&quot;</span>
@@ -12413,7 +12410,7 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Return the angle in radiant of the complex DFT values</span>
@@ -12464,7 +12461,7 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[34]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">f</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -12522,10 +12519,10 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Fs</span> <span class="o">=</span> <span class="mi">32</span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Fs</span> <span class="o">=</span> <span class="mi">32</span>
 <span class="n">f</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span>
 <span class="n">A</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
 <span class="n">duration</span> <span class="o">=</span> <span class="mi">4</span>
@@ -12617,7 +12614,7 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[36]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">DFT_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -12637,7 +12634,7 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[37]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">Fs</span> <span class="o">=</span> <span class="mi">8</span>
@@ -12685,14 +12682,14 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">FFT</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A recursive implementation of the 1D Cooley-Tukey FFT&quot;&quot;&quot;</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="n">N</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    
+
     <span class="k">if</span> <span class="n">N</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;size of x must be a power of 2&quot;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">N</span> <span class="o">&lt;=</span> <span class="mi">32</span><span class="p">:</span>  <span class="c1"># this cutoff should be optimized</span>
@@ -12712,7 +12709,7 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[39]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">Fs</span> <span class="o">=</span> <span class="mi">64</span>
@@ -12767,7 +12764,7 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="prompt input_prompt">In&nbsp;[40]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">timeit</span> DFT_naive(y)
@@ -12789,9 +12786,9 @@ True
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>526 ms ± 6.53 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
-4.59 ms ± 123 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
-8.82 µs ± 101 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+<pre>524 ms ± 6.7 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+4.49 ms ± 162 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+9 µs ± 77.4 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
 </pre>
 </div>
 </div>
@@ -12810,7 +12807,7 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="prompt input_prompt">In&nbsp;[41]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">Fs</span> <span class="o">=</span> <span class="mi">8</span>
@@ -12829,7 +12826,7 @@ True
 <span class="c1"># Compute iDFT</span>
 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
     <span class="n">idft</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">([</span><span class="n">n</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">i</span><span class="o">*</span><span class="n">k</span><span class="o">/</span><span class="n">N</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">i</span><span class="o">*</span><span class="n">k</span><span class="o">/</span><span class="n">N</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dft</span><span class="p">)])</span>
-    
+
 <span class="n">reconstructed_signal</span> <span class="o">=</span> <span class="n">idft</span><span class="o">.</span><span class="n">real</span> <span class="o">/</span> <span class="n">N</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
@@ -12870,19 +12867,19 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="prompt input_prompt">In&nbsp;[42]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.special</span> <span class="k">import</span> <span class="n">factorial</span>
-        
+
 <span class="k">def</span> <span class="nf">cos_taylor</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Compute a cos of a angle in radian.</span>
-<span class="sd">    n_iter = number of iterations&quot;&quot;&quot;</span>   
+<span class="sd">    n_iter = number of iterations&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(((</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">)))</span> <span class="o">/</span> <span class="n">factorial</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">))</span>
-    
+
 <span class="k">def</span> <span class="nf">sin_taylor</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Compute a cos of a angle in radian.</span>
-<span class="sd">    n_iter = number of iterations&quot;&quot;&quot;</span>   
+<span class="sd">    n_iter = number of iterations&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(((</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)))</span> <span class="o">/</span> <span class="n">factorial</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_iter</span><span class="p">))</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">cos_taylor</span><span class="p">(</span><span class="mf">3.5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mf">3.5</span><span class="p">))</span>
@@ -12919,7 +12916,7 @@ True
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="prompt input_prompt">In&nbsp;[43]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">timeit</span> cos_taylor(3.5, 50)
@@ -12940,8 +12937,8 @@ True
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>439 µs ± 7.18 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
-485 ns ± 6.27 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
+<pre>434 µs ± 2.83 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+490 ns ± 3.2 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
 </pre>
 </div>
 </div>
@@ -12963,7 +12960,7 @@ True
   </div>
 </body>
 
- 
+
 
 
 </html>
