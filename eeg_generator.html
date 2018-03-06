@@ -15,6 +15,7 @@
 		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<link rel="stylesheet" href="assets/css/academicons.css"/>
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 	</head>
 	<body>
@@ -54,26 +55,26 @@
 
 				<!-- Main -->
 					<div id="main">
-					
+
 					<div class="container">
 
 
 						<header>
 							<h4>How to create an EEG-like signal with Matlab</h4>
 						</header>
-						
-						
+
+
 						<p align="justify">This tutorial will show how to easily create an EEG-like simulated signal with Matlab by basically summing a lot of sines with various weighted-frequencies.</p>
-						
+
 						<ul class="feature-icons"><li class="fa-code">A full version of the MATLAB script used can be found on my <a href="https://github.com/raphaelvallat/eeg_generator">GitHub repository</a></li></ul>
-						
+
 
 						<span class="image fit"><img src="images/tutorials/eeg_gen/signal.png" alt="" />
 						<figcaption>Example of an EEG-like simulated signal with a peak frequency of 10 Hz.</figcaption>
 						</span>
-												
+
 						<hr />
-						
+
 						<h3>Define signal properties</h3>
 						<p>First, we define the number of sines we want to sum, the sampling rate and the duration (in seconds) of the signal.</p>
 <pre><code>
@@ -86,7 +87,7 @@ f.t       	= (1:f.N)/ f.s_fs;        <font color="67a888">% Time vector</font>
 </code></pre>
 
 						<p>Then define the frequency-band we want to include in the signal (For illustration purpose, I only included frequencies from 0.5 to 18 Hz). Note that the max frequency is defined by the Nyquist frequency as half your original sampling rate (i.e. 100 / 2 = 50 Hz)</p>
-							
+
 <pre><code>
 <font color="67a888">% Define frequency-band</font>
 f.PFreq = 10;
@@ -97,7 +98,7 @@ f.sigma = [ 12 18 ];
 </code></pre>
 
 						<hr />
-							
+
 						<h3>Weight frequency-band amplitude</h3>
 						<p align="justify">As we have seen earlier, in a real EEG signal there is a negative asymptotic relationship between the frequency in Hz and its magnitude. The trick here is to create a non-linearly spaced vector of frequencies, meaning that for example the frequencies corresponding to Delta waves (0.5-4 Hz) will represent 40 % of the final frequency vector whereas the sigma frequencies (12-18 Hz) will only represent 15% of the final vector.</p>
 
@@ -109,33 +110,33 @@ s 	= [ f.delta(1) f.theta(1) f.alpha(1) f.sigma(1) ];
 e 	= [ f.delta(2) f.theta(2) f.alpha(2) f.sigma(2) ];
 d 	= [ 0.4*f.nSines 0.25*f.nSines 0.2*f.nSines 0.15*f.nSines ];
 Fs 	= vdv(s,e,d)';
-</code></pre>		
-						
+</code></pre>
+
 						<hr />
-				
+
 						<h3>Optional: define main frequency</h3>
 						<p align="justify">Now let's say we want our signal to have a peak frequency of 10 Hz, which usually corresponds to a state of rested wakefulness. First, we create a Gaussian random weight vector of amplitude which contains values between -1 and 1. This is critical to give the "chaotic" aspect of the EEG signal. Then, we find the weights for the frequencies around the desired peak frequency and convert them to absolute number (in other words, increase synchronisation between the sines).</p>
-						
+
 <pre><code>
 f.w  		= randn(f.nSines, 1);
 idx_PFreq 	= find(f.Fs > f.PFreq-0.01 & f.Fs < f.PFreq+0.01);
 f.w(idx_PFreq) 	= abs(f.w(idx_PFreq));
-</code></pre>	
+</code></pre>
 
 						<hr />
-						
+
 						<h3>Sum the sines</h3>
 						<p>Now we can sum up all the sines and convert the resulting signal to Z-score.</p>
-						
+
 <pre><code>
 f.Sines 	= f.w*ones(size(f.t)).*sin(2*pi*f.Fs*f.t);
 f.signal 	= zscore(sum(f.Sines));
-</code></pre>	
+</code></pre>
 						<hr />
 
 						<h3>Plot signal</h3>
 						<p>And finally plot the EEG-like signal in time and/or frequency domain (see my <a href="https://github.com/raphaelvallat/eeg_generator">GitHub repository</a>)</p>
-						
+
 <pre><code>
 figure;
 set(gcf,'Units','inches', 'Position',[0 0 10 4])
@@ -144,32 +145,32 @@ xlabel('Time (sec)');
 ylim( [-10 10] );
 box off
 grid off
-</code></pre>	
+</code></pre>
 
 
 						<span class="image fit"><img src="images/tutorials/eeg_gen/signal.png" alt="" />
-						
+
 						</span>
-						
+
 						<p>The same after adding some higher frequencies in the spectrum (up to 100 Hz)</p>
 
 						<span class="image fit"><img src="images/tutorials/eeg_gen/signal_magnitude_full.png" alt="" />
-						
+
 						</span>
-						
-						
+
+
 						<p>As you can see from the image below that <a href="https://fr.mathworks.com/company/newsletters/articles/teaching-medical-instrumentation-at-the-university-of-washington.html">I found on Internet</a> of a 2-seconds "real" neuron-generated EEG signal, we are actually not so far from the original</p>
-						
+
 						<span class="image"><img src="https://fr.mathworks.com/content/mathworks/fr/fr/company/newsletters/articles/teaching-medical-instrumentation-at-the-university-of-washington/_jcr_content/mainParsys/image_0.img.gif/1469941515253.gif" alt="" />
 						</span>
-						
-						
+
+
 						<p>Deep sleep simulated EEG (High amplitude delta + mixed higher frequencies) </p>
 
 						<span class="image fit"><img src="images/tutorials/eeg_gen/signal_sws.png" alt="" />
-						
+
 						</span>
-						
+
 				</div>
 
 				<!-- Footer -->

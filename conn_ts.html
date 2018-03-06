@@ -15,6 +15,7 @@
 		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<link rel="stylesheet" href="assets/css/academicons.css"/>
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 	</head>
 	<body>
@@ -54,7 +55,7 @@
 
 				<!-- Main -->
 					<div id="main">
-					
+
 					<div class="container">
 
 
@@ -62,35 +63,35 @@
 							<h4>CONN Toolbox</h4>
 							<h3>Plot denoised BOLD timeseries of 2 ROIs</h3>
 						</header>
-						
+
 						<p>A simple script to plot the BOLD denoised time-series of two specified ROIs from CONN Toolbox ROI.mat file</p>
-						
+
 						<ul class="feature-icons">
 						<li class="fa-code">The full script can be downloaded on my <a href="https://github.com/raphaelvallat/conn_tools">GitHub repository</a></li></ul>
 
 						<span class="image fit"><img src="images/tutorials/conn_ts/TS_example.png" alt="" />
 						</span>
-						
-						<hr />	
-						
+
+						<hr />
+
 						<h4>Define analysis info</h4>
-						
-						<p> 
+
+						<p>
 						<ul>
 						<li><b>Info.wdir:</b> path to your CONN/results/preprocessing folder which contains the denoised time-series of all the ROIs (see <a href="https://www.nitrc.org/forum/message.php?msg_id=18633">this post</a> for a exhaustive review of CONN output files.</li><br>
 						<li><b>Info.session:</b> if you have several session (i.e. pre / post resting-state scans), enter the number of the desired session or put 0 for a temporal concatenation of all sessions.</li><br>
 						<li><b>Info.nsub:</b> number of subjects</li><br>
 						<li><b>ROI.ROIX_name:</b> name of the ROIs you want to plot, as they appear in CONN Toolbox. In this example I am using two classic nodes of the default mode network, i.e. the medial prefrontal cortex and precuneous.</li><br></p>
-						
+
 						<pre><code>
 <font color="67a888">% Info is the main structure containing all analysis informations</font>
-Info            = [];       
+Info            = [];
 Info.wdir       = 'C:\PhD\fMRI\CONN\conn_39s_preproc\results\preprocessing\';
 Info.session    = 1;        % 0 for all sessions, 1=session1, 2=session2, etc...
 Info.nsub       = 39;       % Total number of subjects
 
 <font color="67a888">% ROI is the main structure containing ROI names, data</font>
-ROI             = [];       
+ROI             = [];
 ROI.ROI1_data   = [];
 ROI.ROI2_data   = [];
 
@@ -102,43 +103,43 @@ ROI.ROI2_name   = 'NetDMN.PC';
 Info.outdir     = pwd;
 Info.outfile    = [ Info.outdir '\TS_' ROI.ROI1_name  '_' ROI.ROI2_name '_RUN' num2str(Info.session) '.png' ];
 </code></pre>
-	
+
 					<hr />
 					<h4>Import data</h4>
 					<p>Once this is done, the next step is to load the ROI mat file of each subject and find the two time-series of interest</p>
 <pre><code>
 for i=1:Info.nsub
-    
-    <font color="67a888">% Loading .MAT file</font>   
+
+    <font color="67a888">% Loading .MAT file</font>
     matfile = [ 'ROI_Subject0', num2str(i, '%02i') ,'_Condition000.mat' ];
-    
+
     <font color="67a888">%fprintf('\nLoading:\t %s', matfile);</font>
-    
+
     load([Info.wdir matfile]);
-    
+
     ROI.names   = names;
     ROI.dsess   = data_sessions;
-    
+
     <font color="67a888">% Find index of selected ROIs</font>
     ROI.ROI1_idx    = find(strcmp(ROI.ROI1_name, names));
     ROI.ROI2_idx    = find(strcmp(ROI.ROI2_name, names));
-    
+
     <font color="67a888">% Extract BOLD data</font>
     ROI.ROI1_data   = [ ROI.ROI1_data , cell2mat(data(ROI.ROI1_idx)) ];
     ROI.ROI2_data   = [ ROI.ROI2_data , cell2mat(data(ROI.ROI2_idx)) ];
-    
+
     <font color="67a888">% Select sessions</font>
     if Info.session == 0 ;
         ROI.cond = find(ROI.dsess);
     else
         ROI.cond = find(ROI.dsess == Info.session);
     end
-    
+
 end
 </code></pre>
 
 					<hr />
-					
+
 					<h4>Compute means, sem and correlations</h4>
 					<p>Then compute the mean timeseries with its corresponding standard error of the mean as well as the correlation coefficient between the two mean time-series.</p>
 <pre><code>
@@ -154,11 +155,11 @@ ROI.ROI2_sem    = ROI.ROI2_std / sqrt(Info.nsub);
 <font color="67a888">% Correlation between mean timeseries</font>
 [rho_mean, pval_mean] = corr(ROI.ROI1_mean(ROI.cond), ROI.ROI2_mean(ROI.cond));
 </code></pre>
-			
+
 			<p>By default CONN toolbox applies a Fisher transform to all the R correlation values in order to homogenize the variance. If you prefer to compute the Z fisher-transformed value of your correlation coefficient, simply use the <b>atanh(r)</b> function of Matlab.
 
 			<hr />
-			
+
 			<h4>Plot</h4>
 			<h5>Mean time-series</h5>
 <pre><code>
@@ -196,10 +197,10 @@ end
 dim = [.2 .2 .3 .1];
 str = [ 'r = ', num2str(round(rho_mean, 2), '%.2f'), ' ; p = ', num2str(pval_mean), ' ; n = ', num2str(Info.nsub) ];
 annotation('textbox',dim,'String',str,'FitBoxToText','on', 'EdgeColor', 'none', 'FontWeight', 'bold', 'FontAngle', 'italic');
-</code></pre>		
+</code></pre>
 
 			<h5>Set axis properties</h5>
-			
+
 <pre><code>
 y_lim = [ -0.2 0.2 ];
 ylim(y_lim);
@@ -216,13 +217,13 @@ fig.PaperPositionMode = 'auto';
 print(Info.outfile,'-dpng','-r600')
 
 clearvars -except ROI Info
-</code></pre>		
+</code></pre>
 
 			<p>And that's it!</p>
-			
+
 			<span class="image fit"><img src="images/tutorials/conn_ts/TS_example.png" alt="" />
 			</span>
-			
+
 				</div>
 
 				<!-- Footer -->
