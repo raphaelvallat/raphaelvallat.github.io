@@ -1,0 +1,6 @@
+ITI,Jitter,SocialCues,SocialInfo,SocialPics,StockInfo,StockPics,Block
+4,4,Reject,NonSocial,Pics/Faces/NonSocial/NonSocialReject.png,LV,Pics/Stocks/LV_07.png,P
+3,2,Buy,Humans,Pics/Faces/Humans/HumansBuy.png,HV,Pics/Stocks/HV_30.png,P
+4,4,Half,Humans,Pics/Faces/Humans/HumansHalf2.png,HV,Pics/Stocks/HV_02.png,P
+2,2,Reject,NonSocial,Pics/Faces/NonSocial/NonSocialReject.png,LV,Pics/Stocks/LV_43.png,P
+5,3,Half,Humans,Pics/Faces/Humans/HumansHalf1.png,HV,Pics/Stocks/HV_32.png,P
