@@ -16,8 +16,8 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<link rel="stylesheet" href="assets/css/academicons.css"/>
 		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-		<link rel="stylesheet" href="highlight/styles/sunburst.css">
-		<script src="highlight/highlight.pack.js"></script>
+		<link rel="stylesheet" href="assets/css/sunburst.css">
+		<script src="assets/js/highlight.pack.js"></script>
 		<script>hljs.initHighlightingOnLoad();</script>
 		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 	</head>
@@ -88,7 +88,7 @@
 						<li><b>ROI.ROIX_name:</b> name of the ROIs you want to plot, as they appear in CONN Toolbox. In this example I am using two classic nodes of the default mode network, i.e. the medial prefrontal cortex and precuneous.</li><br></p>
 
 						<pre><code class="matlab">Info            = [];
-Info.wdir       = 'C:\PhD\fMRI\CONN\conn_39s_preproc\results\preprocessing\ ':
+Info.wdir       = 'C:/PhD/fMRI/CONN/conn_39s_preproc/results/preprocessing/';
 Info.session    = 1;        % 0 for all sessions, 1=session1, 2=session2, etc...
 Info.nsub       = 39;       % Total number of subjects
 
@@ -103,7 +103,8 @@ ROI.ROI2_name   = 'NetDMN.PC';
 
 % Define outpath and outfilename
 Info.outdir     = pwd;
-Info.outfile    = [ Info.outdir '\TS_' ROI.ROI1_name  '_' ROI.ROI2_name '_RUN' num2str(Info.session) '.png' ];
+Info.outfile    = [ Info.outdir '/TS_' ROI.ROI1_name  '_' ROI.ROI2_name '_RUN'
+			num2str(Info.session) '.png' ];
 </code></pre>
 
 					<hr />
@@ -184,15 +185,19 @@ legend('boxoff')
 
 			<h5>Semi-transparent continuous error bar</h5>
 <pre><code class="matlab">if Info.nsub > 1
-    fill([ROI.x;flipud(ROI.x)],[ROI.ROI1_Y-ROI.ROI1_dy;flipud(ROI.ROI1_Y+ROI.ROI1_dy)],line_color(1,:),'linestyle','none', 'FaceAlpha', .2);
-    fill([ROI.x;flipud(ROI.x)],[ROI.ROI2_Y-ROI.ROI2_dy;flipud(ROI.ROI2_Y+ROI.ROI2_dy)],line_color(2,:),'linestyle','none', 'FaceAlpha', .2);
+    fill([ROI.x;flipud(ROI.x)],[ROI.ROI1_Y-ROI.ROI1_dy;flipud(ROI.ROI1_Y+ROI.ROI1_dy)],
+				line_color(1,:),'linestyle','none', 'FaceAlpha', .2);
+    fill([ROI.x;flipud(ROI.x)],[ROI.ROI2_Y-ROI.ROI2_dy;flipud(ROI.ROI2_Y+ROI.ROI2_dy)],
+				line_color(2,:),'linestyle','none', 'FaceAlpha', .2);
 end
 </code></pre>
 
 			<h5>Annotate the correlation value</h5>
 <pre><code class="matlab">dim = [.2 .2 .3 .1];
-str = [ 'r = ', num2str(round(rho_mean, 2), '%.2f'), ' ; p = ', num2str(pval_mean), ' ; n = ', num2str(Info.nsub) ];
-annotation('textbox',dim,'String',str,'FitBoxToText','on', 'EdgeColor', 'none', 'FontWeight', 'bold', 'FontAngle', 'italic');
+str = [ 'r = ', num2str(round(rho_mean, 2), '%.2f'), ' ; p = ',
+			num2str(pval_mean), ' ; n = ', num2str(Info.nsub) ];
+annotation('textbox',dim,'String',str,'FitBoxToText','on', 'EdgeColor',
+			'none', 'FontWeight', 'bold', 'FontAngle', 'italic');
 </code></pre>
 
 			<h5>Set axis properties</h5>
