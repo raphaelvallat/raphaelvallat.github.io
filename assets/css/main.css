@@ -1665,15 +1665,15 @@
 	code {
 		background: #222;
 		border-radius: 5px;
-		color: #fff;
-		font-family: "Source Code Pro", monospace;
+		color: #ffffff;
+		font-family: "Roboto Mono", monospace;
 		font-size: 0.85em;
 		margin: 0 0.25em;
 		padding: 0.25em 0.65em;
 	}
 
 	pre {
-		font-family: "Source Code Pro", monospace;
+		font-family: "Roboto Mono", monospace;
 		font-size: 0.85em;
 		margin: 0 0 1.25em 0;
 	}

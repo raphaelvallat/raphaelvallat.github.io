@@ -16,6 +16,9 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<link rel="stylesheet" href="assets/css/academicons.css"/>
 		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+		<link rel="stylesheet" href="highlight/styles/sunburst.css">
+		<script src="highlight/highlight.pack.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
 		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 	</head>
 	<body>
@@ -84,23 +87,21 @@
 						<li><b>Info.nsub:</b> number of subjects</li><br>
 						<li><b>ROI.ROIX_name:</b> name of the ROIs you want to plot, as they appear in CONN Toolbox. In this example I am using two classic nodes of the default mode network, i.e. the medial prefrontal cortex and precuneous.</li><br></p>
 
-						<pre><code>
-<font color="67a888">% Info is the main structure containing all analysis informations</font>
-Info            = [];
-Info.wdir       = 'C:\PhD\fMRI\CONN\conn_39s_preproc\results\preprocessing\';
+						<pre><code class="matlab">Info            = [];
+Info.wdir       = 'C:\PhD\fMRI\CONN\conn_39s_preproc\results\preprocessing\ ':
 Info.session    = 1;        % 0 for all sessions, 1=session1, 2=session2, etc...
 Info.nsub       = 39;       % Total number of subjects
 
-<font color="67a888">% ROI is the main structure containing ROI names, data</font>
+% ROI is the main structure containing ROI names, data
 ROI             = [];
 ROI.ROI1_data   = [];
 ROI.ROI2_data   = [];
 
-<font color="67a888">% Select pair of ROIs</font>
+% Select pair of ROIs
 ROI.ROI1_name   = 'NetDMN.MPFC';
 ROI.ROI2_name   = 'NetDMN.PC';
 
-<font color="67a888">% Define outpath and outfilename</font>
+% Define outpath and outfilename
 Info.outdir     = pwd;
 Info.outfile    = [ Info.outdir '\TS_' ROI.ROI1_name  '_' ROI.ROI2_name '_RUN' num2str(Info.session) '.png' ];
 </code></pre>
@@ -108,34 +109,32 @@ Info.outfile    = [ Info.outdir '\TS_' ROI.ROI1_name  '_' ROI.ROI2_name '_RUN' n
 					<hr />
 					<h4>Import data</h4>
 					<p>Once this is done, the next step is to load the ROI mat file of each subject and find the two time-series of interest</p>
-<pre><code>
-for i=1:Info.nsub
+<pre><code class="matlab">for i=1:Info.nsub
 
-    <font color="67a888">% Loading .MAT file</font>
+    % Loading .MAT file
     matfile = [ 'ROI_Subject0', num2str(i, '%02i') ,'_Condition000.mat' ];
 
-    <font color="67a888">%fprintf('\nLoading:\t %s', matfile);</font>
+    %fprintf('\nLoading:\t %s', matfile);
 
     load([Info.wdir matfile]);
 
     ROI.names   = names;
     ROI.dsess   = data_sessions;
 
-    <font color="67a888">% Find index of selected ROIs</font>
+    % Find index of selected ROIs
     ROI.ROI1_idx    = find(strcmp(ROI.ROI1_name, names));
     ROI.ROI2_idx    = find(strcmp(ROI.ROI2_name, names));
 
-    <font color="67a888">% Extract BOLD data</font>
+    % Extract BOLD data
     ROI.ROI1_data   = [ ROI.ROI1_data , cell2mat(data(ROI.ROI1_idx)) ];
     ROI.ROI2_data   = [ ROI.ROI2_data , cell2mat(data(ROI.ROI2_idx)) ];
 
-    <font color="67a888">% Select sessions</font>
+    % Select sessions
     if Info.session == 0 ;
         ROI.cond = find(ROI.dsess);
     else
         ROI.cond = find(ROI.dsess == Info.session);
     end
-
 end
 </code></pre>
 
@@ -143,8 +142,7 @@ end
 
 					<h4>Compute means, sem and correlations</h4>
 					<p>Then compute the mean timeseries with its corresponding standard error of the mean as well as the correlation coefficient between the two mean time-series.</p>
-<pre><code>
-<font color="67a888">% Compute mean, std and sem</font>
+<pre><code class="matlab">% Compute mean, std and sem
 ROI.ROI1_mean   = mean(ROI.ROI1_data, 2);
 ROI.ROI1_std    = std(ROI.ROI1_data, 0, 2);
 ROI.ROI1_sem    = ROI.ROI1_std / sqrt(Info.nsub);
@@ -153,7 +151,7 @@ ROI.ROI2_mean   = mean(ROI.ROI2_data, 2);
 ROI.ROI2_std    = std(ROI.ROI2_data, 0, 2);
 ROI.ROI2_sem    = ROI.ROI2_std / sqrt(Info.nsub);
 
-<font color="67a888">% Correlation between mean timeseries</font>
+% Correlation between mean timeseries
 [rho_mean, pval_mean] = corr(ROI.ROI1_mean(ROI.cond), ROI.ROI2_mean(ROI.cond));
 </code></pre>
 
@@ -163,8 +161,7 @@ ROI.ROI2_sem    = ROI.ROI2_std / sqrt(Info.nsub);
 
 			<h4>Plot</h4>
 			<h5>Mean time-series</h5>
-<pre><code>
-<font color="67a888">% Create plot variables</font>
+<pre><code class="matlab">% Create plot variables
 ROI.x       = [ 1:length(ROI.cond) ]';
 ROI.ROI1_Y  = ROI.ROI1_mean(ROI.cond,:);
 ROI.ROI2_Y  = ROI.ROI2_mean(ROI.cond,:);
@@ -178,7 +175,7 @@ set(gcf,'Units','inches', 'Position',[0 0 6 3])
 line_color = [ 0.1 0.3 0.2 ; 0.8 0.3 0.1 ];
 set(gca, 'ColorOrder', line_color, 'NextPlot', 'replacechildren');
 
-<font color="67a888">% Plot average ROI BOLD signal</font>
+% Plot average ROI BOLD signal
 plot(ROI.x, ROI.ROI1_Y, ROI.x, ROI.ROI2_Y, 'LineWidth', 1.5)
 hold on
 legend(ROI.ROI1_name, ROI.ROI2_name, 'Location', 'northeast')
@@ -186,24 +183,21 @@ legend('boxoff')
 </code></pre>
 
 			<h5>Semi-transparent continuous error bar</h5>
-<pre><code>
-if Info.nsub > 1
+<pre><code class="matlab">if Info.nsub > 1
     fill([ROI.x;flipud(ROI.x)],[ROI.ROI1_Y-ROI.ROI1_dy;flipud(ROI.ROI1_Y+ROI.ROI1_dy)],line_color(1,:),'linestyle','none', 'FaceAlpha', .2);
     fill([ROI.x;flipud(ROI.x)],[ROI.ROI2_Y-ROI.ROI2_dy;flipud(ROI.ROI2_Y+ROI.ROI2_dy)],line_color(2,:),'linestyle','none', 'FaceAlpha', .2);
 end
 </code></pre>
 
 			<h5>Annotate the correlation value</h5>
-<pre><code>
-dim = [.2 .2 .3 .1];
+<pre><code class="matlab">dim = [.2 .2 .3 .1];
 str = [ 'r = ', num2str(round(rho_mean, 2), '%.2f'), ' ; p = ', num2str(pval_mean), ' ; n = ', num2str(Info.nsub) ];
 annotation('textbox',dim,'String',str,'FitBoxToText','on', 'EdgeColor', 'none', 'FontWeight', 'bold', 'FontAngle', 'italic');
 </code></pre>
 
 			<h5>Set axis properties</h5>
 
-<pre><code>
-y_lim = [ -0.2 0.2 ];
+<pre><code class="matlab">y_lim = [ -0.2 0.2 ];
 ylim(y_lim);
 xlim([0 length(ROI.cond)]);
 %set(gca, 'XColor', 'w');   % Mask x-axis
@@ -213,7 +207,7 @@ set(gca, 'XTick', [ 0:20:length(ROI.cond) ]);
 grid off
 box off
 
-<font color="67a888">% Savefig 600 dpi</font>
+% Savefig 600 dpi
 fig.PaperPositionMode = 'auto';
 print(Info.outfile,'-dpng','-r600')
 

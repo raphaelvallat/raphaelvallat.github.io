@@ -16,6 +16,10 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<link rel="stylesheet" href="assets/css/academicons.css"/>
 		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+		<link rel="stylesheet" href="highlight/styles/sunburst.css">
+		<script src="highlight/highlight.pack.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
 		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 	</head>
 	<body>
@@ -92,13 +96,12 @@
 						<h4>Extract connectivity matrix</h4>
 						<p>The following code extract all the pairwise correlations in the ROI.mat file </p>
 
-<pre><code>
-<font color="67a888">% Define analysis path</font>
+<pre><code class="matlab">% Define analysis path
 wdir 		= 'C:\Users\Raphael\Desktop\These\conn_example\results\secondlevel';
 corr_net 	= 'Salience';
 corr_group 	= 'AllSubjects';
 corr_run 	= 'rest';
-corr_folder = [ wdir '\' corr_net '\' corr_group '\' corr_run '\' ];
+corr_folder = [ wdir '\' corr_net '\' corr_group '\' corr_run '\' ]; '
 
 load([corr_folder 'ROI.mat']);
 
@@ -120,8 +123,8 @@ end
 
 						<h4>Export to CSV</h4>
 						<p>Now we can export it to CSV file (by default in the same folder as ROI.mat file</p>
-<pre><code>
-corr_name2 	= strrep(corr_name, '-', '_');      % array2table does not work with '-' in var names
+<pre><code class="matlab">% array2table does not work with '-' in var names
+corr_name2 	= strrep(corr_name, '-', '_');
 T_h        	= array2table(corr_h, 'RowNames', corr_name2, 'VariableNames', corr_name2);
 T_F        	= array2table(corr_F, 'RowNames', corr_name2, 'VariableNames', corr_name2);
 T_p        	= array2table(corr_p, 'RowNames', corr_name2, 'VariableNames', corr_name2);
@@ -135,28 +138,27 @@ writetable( T_p, [corr_folder 'p_' corr_net '_' corr_group '_' corr_run '.csv'],
 
 						<h4>Statistics</h4>
 						<p>The following lines compute uncorrected, bonferroni and FDR-corrected p-values</p>
-<pre><code>
-anti_corr_net = False;
+<pre><code class="matlab">anti_corr_net = False;
 
-<font color="67a888">% Case two or several anti-correlated networks (ex: Default and Dorsal Attention)</font>
+% Case two or several anti-correlated networks (ex: Default and Dorsal Attention)
 if anti_corr_net
     tail      = 'two-sided';
     corr_p    = 2*min(corr_info.corr_p, 1-corr_info.corr_p);
 
-<font color="67a888">% Case single network</font>
+% Case single network
 else
     tail      = 'one-sided';
 
 end
 
-<font color="67a888">% Compute Bonferroni and FDR correction
-% conn_fdr function is in conn main folder</font>
+% Compute Bonferroni and FDR correction
+% conn_fdr function is in conn main folder
 alpha_bonf            		= 0.05 / ((numROI)*(numROI-1)/2);
 vector_fdr                      = nonzeros(triu(corr_info.corr_p)');
 vector_fdr(isnan(vector_fdr))   = [];
 corr_p_fdr            		= conn_fdr(vector_fdr);
 
-<font color="67a888">% WRITE OUTPUT</font>
+% WRITE OUTPUT
 fprintf('\nANALYSIS INFO');
 fprintf('\n--------------------------------------');
 fprintf(['\nNetwork:\t ' corr_net]);
@@ -190,12 +192,10 @@ p-FDR corrected:                1
 						<h4>Plotting brain connectivity matrix</h4>
 						<p align="justify">Once we extracted and exported the connectivity matrix in text format, we can plot it using Matlab imagesc command. I will detail here for beta values (corr_h matrix) but if you want to plot F or p values you can check the full script on my <a href="https://github.com/raphaelvallat/conn_tools">GitHub repository</a></p>
 
-<pre><code>
-<font color="67a888">% Remove upper triangle + diagonal</font>
+<pre><code class="matlab">% Remove upper triangle + diagonal
 corr = tril(corr, -1)
 
-
-<font color="67a888">% Start plotting</font>
+% Start plotting
 fig = figure;
 set(gcf,'Units','inches', 'Position',[0 0 6 4])
 
@@ -208,7 +208,7 @@ h = colorbar('eastoutside');
 xlabel(h, 'h', 'FontSize', 14);
 
 
-<font color="67a888">% Title, axis</font>
+% Title, axis
 title('Salience Network', 'FontSize', 14);
 set(gca, 'XTick', (1:numROI));
 set(gca, 'YTick', (1:numROI));
@@ -216,7 +216,7 @@ set(gca, 'Ticklength', [0 0])
 grid off
 box off
 
-<font color="67a888">% Labels</font>
+% Labels
 set(gca, 'XTickLabel', corr_name, 'XTickLabelRotation', 0);
 set(gca, 'YTickLabel', corr_name);
 </code></pre>
@@ -236,9 +236,7 @@ set(gca, 'YTickLabel', corr_name);
 
 						<span class="image fit"><img src="images/tutorials/conn_correl_mat/python_corr_mat.png" alt="" /></span>
 <h5>Code:</h5>
-<pre><code>
-# -*- coding: utf-8 -*-
-import numpy as np
+<pre><code class="python">import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -249,7 +247,7 @@ sns.set(style="white", context='paper', font_scale=1, font='monospace')
 
 def extract_conn_correl_mat():
 
-    <font color="67a888"># Analysis Information</font>
+    # Analysis Information
     wdir             = 'C:/Users/Raphael/Desktop/These/CONN_Club_Neuro/Conn_ClubNeuro_Example/results/secondlevel'
     correl_net       = 'Salience'
     correl_group     = 'AllSubjects'
@@ -257,7 +255,7 @@ def extract_conn_correl_mat():
     correl_type      = 'p'
     correl_folder    = os.path.join(wdir, correl_net, correl_group, correl_run )
 
-    <font color="67a888"># Load .mat file</font>
+    # Load .mat file
     mdata           = scipy.io.loadmat(os.path.join(correl_folder, 'ROI.mat'))
     mdata           = mdata['ROI']
     mdtype          = mdata.dtype
@@ -269,7 +267,7 @@ def extract_conn_correl_mat():
     mcorr.names     = np.concatenate(mcorr.names[0][0])
     mcorr.names     = mcorr.names.str.split('.').str.get(0)
 
-    <font color="67a888"># Extract selected values</font>
+    # Extract selected values
     if correl_type == 'beta':
         corr = pd.DataFrame(np.concatenate([mcorr.h[c] for c in mcorr.h.keys()], axis=0 ), index=mcorr.names)
     elif correl_type == 'F':
@@ -280,19 +278,19 @@ def extract_conn_correl_mat():
     corr            = corr.iloc[:, 0:corr.shape[0]]
     corr.columns    = mcorr.names
 
-    <font color="67a888"># Export to csv</font>
+    # Export to csv
     corr.to_csv(os.path.join(correl_folder, correl_type + '_' + correl_net + '_' + correl_group + '_' + correl_run + '_corr_mat.csv'), sep=';', decimal='.')
 
-    <font color="67a888"># Plot</font>
+    # Plot
     plot_correl_matrix(corr, correl_type, correl_net, correl_group, correl_run, correl_folder )
 
 def plot_correl_matrix(corr, correl_type, correl_net, correl_group, correl_run, correl_folder ):
 
-    <font color="67a888"># Mask diagonal</font>
+    # Mask diagonal
     mask = np.zeros_like(corr, dtype=np.bool)
     mask[np.triu_indices_from(mask, k=1)] = True
 
-    <font color="67a888"># Define plot properties </font>
+    # Define plot properties
     if correl_type == 'F':
         vmin    = 0
         vmax    = 10
@@ -319,7 +317,7 @@ def plot_correl_matrix(corr, correl_type, correl_net, correl_group, correl_run, 
     plt.xlabel('')
     plt.title(correl_type + '_' + correl_net + '_' + correl_group + '_' + correl_run)
 
-    <font color="67a888"># Emphasize networks separation
+	# Emphasize networks separation
 	#    networks = np.array(pd.read_csv(os.path.join(correl_folder, 'networks_level_values.csv')))
 	#    for i, network in enumerate(networks):
 	#        if i and network != networks[i - 1 ]:
