@@ -46,10 +46,10 @@
     </nav>
     <footer>
       <ul class="icons">
-        <li><a href="https://github.com/raphaelvallat" class="icon fa-github"><span class="label">Github</span></a></li>
+        <li><a href="https://github.com/raphaelvallat" class="icon fa-github" target="_blank"><span class="label">Github</span></a></li>
         <li><a href="mailto:raphaelvallat9@gmail.com" class="icon fa-envelope"><span class="label">Email</span></a></li>
-        <li><a href="https://scholar.google.fr/citations?user=XH8IG2UAAAAJ" style="border:none" class="ai ai-google-scholar ai-1x"></a></li>
-        <li><a href="https://www.researchgate.net/profile/Raphael_Vallat2" style="border:none" class="ai ai-researchgate ai-1x"></a></li>
+        <li><a href="https://scholar.google.fr/citations?user=XH8IG2UAAAAJ" style="border:none" class="ai ai-google-scholar ai-1x" target="_blank"></a></li>
+        <li><a href="https://www.researchgate.net/profile/Raphael_Vallat2" style="border:none" class="ai ai-researchgate ai-1x" target="_blank"></a></li>
       </ul>
     </footer>
   </section>
@@ -68,18 +68,18 @@
         </header>
 
         <p align="justify">Welcome to this first tutorial on the Pingouin statistical package. In this tutorial, you will learn how to compute a two-way mixed design analysis of variance (ANOVA) using the Pingouin statistical package. This tutorial is mainly geared for
-          beginner, and more advanced users can check the official <a href="https://raphaelvallat.github.io/pingouin/build/html/api.html">Pingouin API</a>.</p>
+          beginner, and more advanced users can check the official <a href="https://raphaelvallat.github.io/pingouin/build/html/api.html" target="_blank">Pingouin API</a>.</p>
 
         <ul class="feature-icons">
-          <li class="fa-code">Source code of Pingouin on the <a href="https://github.com/raphaelvallat/pingouin">GitHub repository</a></li>
+          <li class="fa-code">Source code of Pingouin on the <a href="https://github.com/raphaelvallat/pingouin" target="_blank">GitHub repository</a></li>
         </ul>
 
         <hr />
 
         <h4>Installation</h4>
 
-        <p align="justify">To install Pingouin, you first need to install <a href="https://git-scm.com/downloads">Git</a> and <a href="https://www.python.org/downloads/">Python 3</a> on your computer. If you are using a Mac or Windows, I strongly recommand installing Python
-          via the <a href="https://www.anaconda.com/download/">Anaconda distribution</a>.<br><br> Once Python and Git are installed, just open a terminal and type the following lines:</p>
+        <p align="justify">To install Pingouin, you first need to install <a href="https://git-scm.com/downloads" target="_blank">Git</a> and <a href="https://www.python.org/downloads/" target="_blank">Python 3</a> on your computer. If you are using a Mac or Windows, I strongly recommand installing Python
+          via the <a href="https://www.anaconda.com/download/" target="_blank">Anaconda distribution</a>.<br><br> Once Python and Git are installed, just open a terminal and type the following lines:</p>
 
         <pre><code class="bash">git clone https://github.com/raphaelvallat/pingouin.git pingouin/
 cd pingouin/
@@ -99,7 +99,7 @@ python setup.py develop
             number of students will be instructed to meditate for 20 minutes a day every day of the week, while the remaining students will be instructed not to change anything to their usual daily routine. This factor is our between-group factor.
             <br><br>Now, we want to examine how meditation significantly improves or worsens the performances over time, starting from the beginning of the school year (August) to the end of the school year. To study that, we are going to asses their
             school performances at three time points during the year: August (or time = 0 months), January (time = +6months) and June (time = +12 months).
-            <br><br> To sum up, we have: 
+            <br><br> To sum up, we have:
 						<ul>
 							<li>One dependant variable: the test scores</li>
 							<li>One within-group variable, time of the year, with three levels (August, January, June)</li>
@@ -174,7 +174,7 @@ df = pd.DataFrame({'Scores': np.r_[control, meditation],
 
 					<h4>Descriptive statistics</h4>
 
-          <p align="justify">Now let's take a look at our data using the <a href="https://seaborn.pydata.org/">Seaborn package</a>:</p>
+          <p align="justify">Now let's take a look at our data using the <a href="https://seaborn.pydata.org/" target="_blank">Seaborn package</a>:</p>
 
           <pre><code class="python">import seaborn as sns
 sns.set()
@@ -244,7 +244,7 @@ sns.pointplot(data=df, x='Time', y='Scores', hue='Group', dodge=True, markers=['
 
           <h4>ANOVA</h4>
 
-          <p align="justify">To test the significance of this effect, we will need to use a mixed-design ANOVA. That is where Pingouin comes into play. We are going to use the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.mixed_anova.html#pingouin.mixed_anova">mixed_anova</a> function with the following input arguments:</p>
+          <p align="justify">To test the significance of this effect, we will need to use a mixed-design ANOVA. That is where Pingouin comes into play. We are going to use the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.mixed_anova.html#pingouin.mixed_anova" target="_blank">mixed_anova</a> function with the following input arguments:</p>
 
           <ul>
             <li><b>dv</b>: name of the column containing the dependant variables</li>
@@ -311,7 +311,7 @@ pg.print_table(aov)
           </table>
 
           <p align="justify">We can see that there is indeed a significant interaction, F(2, 108)=3.64, p=.03. The effect size (partial eta-square) of this interaction is .06. <br><br>However, this does not tell us which specific contrast is <i>actually</i> significant.
-            For this reason, we need to perform post-hocs tests on the interaction. This can be done very easily using the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests">pairwise_ttests</a> function:</p>
+            For this reason, we need to perform post-hocs tests on the interaction. This can be done very easily using the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests" target="_blank">pairwise_ttests</a> function:</p>
 
           <pre><code class="python">posthocs = pg.pairwise_ttests(dv='Scores', within='Time', between='Group',
 			      effects='interaction', data=df)
@@ -368,8 +368,12 @@ pg.print_table(posthocs)
             </tbody>
           </table>
 
-          <p align="justify">Our visual impression is therefore confirmed: there is a <b>significant increase in test scores in the meditator group 12 months after the beginning of the experiment</b> (T=-4.2, p-unc=.0001). The corrected effect size (<a href="http://www.statisticshowto.com/hedges-g/">Hedges g</a>) is superior to 1.0 and can therefore be considered, according to <a href="https://en.wikipedia.org/wiki/Cohen%27s_h#Interpretation">Cohen's rule of thumb</a>, as very large.
+          <p align="justify">Our visual impression is therefore confirmed: there is a <b>significant increase in test scores in the meditator group 12 months after the beginning of the experiment</b> (T=-4.2, p-unc=.0001). The corrected effect size (<a href="http://www.statisticshowto.com/hedges-g/" target="_blank">Hedges g</a>) is superior to 1.0 and can therefore be considered, according to <a href="https://en.wikipedia.org/wiki/Cohen%27s_h#Interpretation" target="_blank">Cohen's rule of thumb</a>, as very large.
 					<br><br>We can therefore conclude that meditating 20 minutes per day significantly improves school performances over a year in primary school students.</p>
+
+          <ul class="actions" align="center">
+            <li><a href="images/tutorials/pingouin/pingouin_data.zip" class="button special icon fa-download" download>Download the data for this tutorial</a></li>
+          </ul>
 
           <hr />
 
@@ -377,7 +381,7 @@ pg.print_table(posthocs)
 
           <h5>Correction for multiple comparisons</h5>
 
-					<p align="justify">If you have a large number of groups and/or measurements, you might want to correct the p-values for multiple comparisons. This can be done very easily using the <em>padjust</em> argument of the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests">pairwise_ttests</a> function:</p>
+					<p align="justify">If you have a large number of groups and/or measurements, you might want to correct the p-values for multiple comparisons. This can be done very easily using the <em>padjust</em> argument of the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests" target="_blank">pairwise_ttests</a> function:</p>
 
           <pre><code class="python">posthocs = pg.pairwise_ttests(dv='Scores', within='Time', between='Group',
 			      effects='interaction', data=df, padjust='holm')
@@ -441,8 +445,8 @@ pg.print_table(posthocs)
 					<h5>Further reading</h5>
 
 					<ul>
-						<li><a href="https://www.frontiersin.org/articles/10.3389/fpsyg.2013.00863/full">Lakens et al 2013</a>:<i> Calculating and reporting effect sizes to facilitate cumulative science: a practical primer for t-tests and ANOVAs.</i></li>
-						<li><a href="https://www.nature.com/articles/nmeth.3293#t1">Altman et Krzywinski 2015</a>:<i> Points of Significance: Split plot design.</i></li>
+						<li><a href="https://www.frontiersin.org/articles/10.3389/fpsyg.2013.00863/full" target="_blank">Lakens et al 2013</a>:<i> Calculating and reporting effect sizes to facilitate cumulative science: a practical primer for t-tests and ANOVAs.</i></li>
+						<li><a href="https://www.nature.com/articles/nmeth.3293#t1" target="_blank">Altman et Krzywinski 2015</a>:<i> Points of Significance: Split plot design.</i></li>
 					</ul>
 
       </div>
@@ -452,7 +456,7 @@ pg.print_table(posthocs)
         <div class="container">
           <ul class="copyright">
             <li>&copy; Raphael Vallat </li>
-            <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+            <li>Design: <a href="http://html5up.net" target="_blank">HTML5 UP</a></li>
             <li>Banner image: Mark Tegethoff</li>
           </ul>
         </div>
