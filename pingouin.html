@@ -244,7 +244,7 @@ sns.pointplot(data=df, x='Time', y='Scores', hue='Group', dodge=True, markers=['
 
           <h4>ANOVA</h4>
 
-          <p align="justify">To test the significance of this effect, we will need to use a mixed-design ANOVA. That is where Pingouin comes into play. We are going to use the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.mixed_anova.html#pingouin.mixed_anova" target="_blank">mixed_anova</a> function with the following input arguments:</p>
+          <p align="justify">To test the significance of this effect, we will need to use a mixed-design ANOVA. That is where <b>Pingouin</b> comes into play. We are going to use the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.mixed_anova.html#pingouin.mixed_anova" target="_blank">mixed_anova</a> function with the following input arguments:</p>
 
           <ul>
             <li><b>dv</b>: name of the column containing the dependant variables</li>
@@ -368,7 +368,7 @@ pg.print_table(posthocs)
             </tbody>
           </table>
 
-          <p align="justify">Our visual impression is therefore confirmed: there is a <b>significant increase in test scores in the meditator group 12 months after the beginning of the experiment</b> (T=-4.2, p-unc=.0001). The corrected effect size (<a href="http://www.statisticshowto.com/hedges-g/">Hedges g</a>) is superior to 1.0 and can therefore be considered, according to <a href="https://en.wikipedia.org/wiki/Cohen%27s_h#Interpretation">Cohen's rule of thumb</a>, as very large.</p>
+          <p align="justify">Our visual impression is therefore confirmed: there is a <b>significant increase in test scores in the meditator group 12 months after the beginning of the experiment</b> (T=-4.2, p-unc=.0001). The corrected effect size (<a href="http://www.statisticshowto.com/hedges-g/">Hedges g</a>) is superior to 1.0 and can therefore be considered, according to <a href="https://en.wikipedia.org/wiki/Cohen%27s_h#Interpretation">Cohen's rule of thumb</a>, as very large.
 
           <ul class="actions" align="center">
             <li><a href="images/tutorials/pingouin/pingouin_data.zip" class="button special icon fa-download" download>Download the data for this tutorial</a></li>
@@ -440,6 +440,13 @@ pg.print_table(posthocs)
               </tr>
             </tbody>
           </table>
+
+          <p align="justify"></p>
+
+          <h5>Missing values and unbalanced design</h5>
+
+          <p align="justify">If one subject has one or more missing observations(for example, no tests scores in January), you might want to remove this subject from the ANOVA and post-hocs analyses. This is possible using the <code>remove_na=True</code> argument of the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.mixed_anova.html#pingouin.mixed_anova" target="_blank">mixed_anova</a> and <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests" target="_blank">pairwise_ttests</a> functions.
+          <br><br>On another note, Pingouin also works well with unbalanced design (i.e. different number of students per group). Please find an example in the full script of this tutorial (link above).</p>
 
 					<h5>Further reading</h5>
 
