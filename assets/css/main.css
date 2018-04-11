@@ -1555,11 +1555,11 @@
 	}
 
 	body, input, select, textarea {
-		color: #6c6c6c;
+		color: #565656;
 		font-family: "Roboto", sans-serif;
-		font-size: 16pt;
-		font-weight: 400;
-		line-height: 1.75em;
+		font-size: 15pt;
+		font-weight: 420;
+		line-height: 1.5em;
 	}
 
 	a {
@@ -1567,7 +1567,7 @@
 		-webkit-transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 		-ms-transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 		transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-		border-bottom: solid 1px #e4e4e4;
+		border-bottom: solid 2.5px #e4e4e4;
 		color: inherit;
 		text-decoration: none;
 	}
@@ -1579,7 +1579,7 @@
 
 	strong, b {
 		color: #4b4b4b;
-		font-weight: 700;
+		font-weight: 600;
 	}
 
 	em, i {
@@ -1591,7 +1591,7 @@
 	}
 
 	h1, h2, h3, h4, h5, h6 {
-		color: #777;
+		color: #6b6b6b;
 		font-weight: 700;
 		line-height: 1em;
 		margin: 0 0 0.5625em 0;
@@ -1609,7 +1609,7 @@
 	}
 
 	h3 {
-		font-family: "Merriweather Light", sans-serif;
+		font-family: "Roboto", sans-serif;
 		font-size: 1.75em;
 		line-height: 1.5em;
 	}
@@ -1622,8 +1622,9 @@
 	}
 
 	h5 {
-		font-size: 0.9em;
+		font-size: 1.1em;
 		line-height: 1.5em;
+		margin: 0 0 1em 0;
 	}
 
 	h6 {
@@ -1667,7 +1668,7 @@
 		border-radius: 5px;
 		color: #ffffff;
 		font-family: "Roboto Mono", monospace;
-		font-size: 0.85em;
+		font-size: 1em;
 		margin: 0 0.25em;
 		padding: 0.25em 0.65em;
 	}
@@ -1675,13 +1676,13 @@
 	pre {
 		font-family: "Roboto Mono", monospace;
 		font-size: 0.85em;
-		margin: 0 0 1.25em 0;
+		margin: 0 0 2.25em 0;
 	}
 
 		pre code {
 			-webkit-overflow-scrolling: touch;
 			display: block;
-			line-height: 1.25em;
+			line-height: 1.4em;
 			overflow-x: auto;
 			padding: 0.5em 1.5em;
 		}
@@ -1736,7 +1737,7 @@
 	}
 
 		header.major h2 + p {
-			color: #777;
+			color: #6b6b6b;
 			font-size: 1.75em;
 			font-weight: 700;
 			margin-top: -0.75em;
@@ -1749,7 +1750,7 @@
 	}
 
 	label {
-		color: #777;
+		color: #6b6b6b;
 		display: block;
 		font-size: 0.9em;
 		font-weight: 700;
@@ -2049,8 +2050,8 @@
 
 	ul {
 		list-style: disc;
-		margin: 0 0 2.25em 0;
-		padding-left: 1em;
+		margin: 0 0 1.25em 0;
+		padding-left: 2em;
 	}
 
 		ul li {
@@ -2232,7 +2233,7 @@
 		}
 
 		table th {
-			color: #777;
+			color: #6b6b6b;
 			font-size: 0.9em;
 			font-weight: 700;
 			padding: 0 0.75em 0.75em 0.75em;
@@ -2360,7 +2361,7 @@
 		.button.alt {
 			background-color: transparent;
 			box-shadow: inset 0 0 0 2px #e4e4e4;
-			color: #777 !important;
+			color: #6b6b6b !important;
 		}
 
 			input[type="submit"].alt:hover,
@@ -2368,7 +2369,7 @@
 			input[type="button"].alt:hover,
 			.button.alt:hover {
 				background-color: #f4f4f4;
-				color: #777 !important;
+				color: #6b6b6b !important;
 			}
 
 			input[type="submit"].alt:active,
