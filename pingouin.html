@@ -78,16 +78,11 @@
 
         <h4>Installation</h4>
 
-        <p align="justify">To install Pingouin, you first need to install <a href="https://git-scm.com/downloads" target="_blank">Git</a> and <a href="https://www.python.org/downloads/" target="_blank">Python 3</a> on your computer. If you are using a Mac or Windows, I strongly recommand installing Python
-          via the <a href="https://www.anaconda.com/download/" target="_blank">Anaconda distribution</a>.<br><br> Once Python and Git are installed, just open a terminal and type the following lines:</p>
+        <p align="justify">To install Pingouin, you need to have <a href="https://www.python.org/downloads/" target="_blank">Python 3</a> installed on your computer. If you are using a Mac or Windows, I strongly recommand installing Python via the <a href="https://www.anaconda.com/download/" target="_blank">Anaconda distribution</a>.<br><br>To install pingouin, just open a terminal and type the following lines:</p>
 
-        <pre><code class="bash">git clone https://github.com/raphaelvallat/pingouin.git pingouin/
-cd pingouin/
-pip install -r requirements.txt
-python setup.py develop
-</code></pre>
+        <pre><code class="bash">pip install pingouin</code></pre>
 
-        <p>Once Pingouin is installed, you can simply load it in a python script or ipython console using the following line:
+        <p>Once Pingouin is installed, you can simply load it in a python script or ipython console:
 
           <pre><code class="python">import pingouin as pg</code></pre>
 
@@ -100,15 +95,15 @@ python setup.py develop
             <br><br>Now, we want to examine how meditation significantly improves or worsens the performances over time, starting from the beginning of the school year (August) to the end of the school year. To study that, we are going to asses their
             school performances at three time points during the year: August (or time = 0 months), January (time = +6months) and June (time = +12 months).
             <br><br> To sum up, we have:
-						<ul>
-							<li>One dependant variable: the test scores</li>
-							<li>One within-group variable, time of the year, with three levels (August, January, June)</li>
-							<li>One between-group variable, Group, with two levels (Control, Meditation)</li>
-						</ul>
+            <ul>
+              <li>One dependant variable: the test scores</li>
+              <li>One within-group variable, time of the year, with three levels (August, January, June)</li>
+              <li>One between-group variable, Group, with two levels (Control, Meditation)</li>
+            </ul>
 
             Let's generate this fake dataset using Pandas:
 
-					</p>
+          </p>
 
           <pre><code class="python">import pandas as pd
 import numpy as np
@@ -120,7 +115,7 @@ months = ['August', 'January', 'June']
 # Generate random data
 np.random.seed(1234)
 control = np.random.normal(5.5, size=len(months) * n)
-meditation = np.r_[ np.random.normal(5.5, size=n),
+meditation = np.r_[ np.random.normal(5.4, size=n),
                     np.random.normal(5.8, size=n),
                     np.random.normal(6.4, size=n) ]
 
@@ -130,49 +125,48 @@ df = pd.DataFrame({'Scores': np.r_[control, meditation],
                    'Group': np.repeat(['Control', 'Meditation'], len(months) * n)})
 </code></pre>
 
-					<br>
+          <br>
           <p align="justify">We can print the first lines of our dataframe using <code class="python">df.head()</code>:</p>
           <table>
             <caption>DATAFRAME</caption>
             <thead>
               <tr>
                 <th>Group </th>
-                <th>Scores</th>
+                <th> Scores</th>
                 <th>Time </th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>Control</td>
-                <td>5.9714</td>
+                <td> 5.9714</td>
                 <td>August</td>
               </tr>
               <tr>
                 <td>Control</td>
-                <td>4.3090</td>
+                <td> 4.3090</td>
                 <td>August</td>
               </tr>
               <tr>
                 <td>Control</td>
-                <td>6.9327</td>
+                <td> 6.9327</td>
                 <td>August</td>
               </tr>
               <tr>
                 <td>Control</td>
-                <td>5.1873</td>
+                <td> 5.1873</td>
                 <td>August</td>
               </tr>
               <tr>
                 <td>Control</td>
-                <td>4.7794</td>
+                <td> 4.7794</td>
                 <td>August</td>
               </tr>
             </tbody>
           </table>
+          <hr />
 
-					<hr />
-
-					<h4>Descriptive statistics</h4>
+          <h4>Descriptive statistics</h4>
 
           <p align="justify">Now let's take a look at our data using the <a href="https://seaborn.pydata.org/" target="_blank">Seaborn package</a>:</p>
 
@@ -194,48 +188,48 @@ sns.pointplot(data=df, x='Time', y='Scores', hue='Group', dodge=True, markers=['
             <caption>MEAN AND STD</caption>
             <thead>
               <tr>
-                <th>Time </th>
-                <th>Group </th>
+                <th>Time</th>
+                <th>Group</th>
                 <th>Mean</th>
-								<th>STD</th>
+                <th>STD</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>August </td>
-                <td>Control </td>
+                <td>August</td>
+                <td>Control</td>
                 <td>5.5082</td>
-								<td>1.03</td>
+                <td>1.03</td>
               </tr>
               <tr>
-                <td>August </td>
+                <td>August</td>
                 <td>Meditation</td>
-                <td>5.4325</td>
-								<td>0.81</td>
+                <td>5.3325</td>
+                <td>0.81</td>
               </tr>
               <tr>
                 <td>January</td>
-                <td>Control </td>
+                <td>Control</td>
                 <td>5.6037</td>
-								<td>0.90</td>
+                <td>0.90</td>
               </tr>
               <tr>
                 <td>January</td>
                 <td>Meditation</td>
-                <td>5.9707</td>
-								<td>1.07</td>
+                <td>6.0707</td>
+                <td>1.07</td>
               </tr>
               <tr>
-                <td>June </td>
-                <td>Control </td>
+                <td>June</td>
+                <td>Control</td>
                 <td>5.5916</td>
-								<td>1.18</td>
+                <td>1.18</td>
               </tr>
               <tr>
-                <td>June </td>
+                <td>June</td>
                 <td>Meditation</td>
-                <td>6.7453</td>
-								<td>0.93</td>
+                <td>6.3453</td>
+                <td>0.93</td>
               </tr>
             </tbody>
           </table>
@@ -244,7 +238,8 @@ sns.pointplot(data=df, x='Time', y='Scores', hue='Group', dodge=True, markers=['
 
           <h4>ANOVA</h4>
 
-          <p align="justify">To test the significance of this effect, we will need to use a mixed-design ANOVA. That is where <b>Pingouin</b> comes into play. We are going to use the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.mixed_anova.html#pingouin.mixed_anova" target="_blank">mixed_anova</a> function with the following input arguments:</p>
+          <p align="justify">To test the significance of this effect, we will need to use a mixed-design ANOVA. That is where <b>Pingouin</b> comes into play. We are going to use the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.mixed_anova.html#pingouin.mixed_anova"
+              target="_blank">mixed_anova</a> function with the following input arguments:</p>
 
           <ul>
             <li><b>dv</b>: name of the column containing the dependant variables</li>
@@ -261,12 +256,11 @@ pg.print_table(aov)
 </code></pre>
 
           <br>
-
           <table>
             <caption>ANOVA SUMMARY</caption>
             <thead>
               <tr>
-                <th>Source </th>
+                <th>Source</th>
                 <th>SS</th>
                 <th>DF1</th>
                 <th>DF2</th>
@@ -278,40 +272,40 @@ pg.print_table(aov)
             </thead>
             <tbody>
               <tr>
-                <td>Group </td>
-                <td>10.4399</td>
+                <td>Group</td>
+                <td>5.4600</td>
                 <td>1</td>
                 <td>58</td>
-                <td>10.4399</td>
-                <td>3.0452</td>
-                <td>0.0863</td>
-                <td>0.0499</td>
+                <td>5.4600</td>
+                <td>5.0517</td>
+                <td>0.0284</td>
+                <td>0.0801</td>
               </tr>
               <tr>
-                <td>Time </td>
-                <td>14.6635</td>
+                <td>Time</td>
+                <td>9.8298</td>
                 <td>2</td>
-                <td>108</td>
-                <td>7.3317</td>
-                <td>4.5891</td>
-                <td>0.0122</td>
-                <td>0.0783</td>
+                <td>116</td>
+                <td>4.9149</td>
+                <td>5.1896</td>
+                <td> 0.0069</td>
+                <td>0.0821</td>
               </tr>
               <tr>
                 <td>Interaction</td>
-                <td>11.6317</td>
+                <td>6.7952</td>
                 <td>2</td>
-                <td>108</td>
-                <td>5.8159</td>
-                <td><b>3.6402</b></td>
-                <td><b>0.0295</b></td>
-                <td>0.0632</td>
+                <td>116</td>
+                <td>3.3976</td>
+                <td><b>3.5875</b></td>
+                <td><b>0.0308</b></td>
+                <td>0.0583</td>
               </tr>
             </tbody>
           </table>
 
-          <p align="justify">We can see that there is indeed a significant interaction, F(2, 108)=3.64, p=.03. The effect size (partial eta-square) of this interaction is .06. <br><br>However, this does not tell us which specific contrast is <i>actually</i> significant.
-            For this reason, we need to perform post-hocs tests on the interaction. This can be done very easily using the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests" target="_blank">pairwise_ttests</a> function:</p>
+          <p align="justify">We can see that there is indeed a significant interaction, F(2, 116)=3.59, p=.03. The effect size (partial eta-square) of this interaction is .058. <br><br>However, this does not tell us which specific contrast is <i>actually</i> significant.
+            For this reason, we need to perform post-hocs tests on the interaction. This can be done very easily using the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests" target="_blank">pairwise_ttests</a>            function:</p>
 
           <pre><code class="python">posthocs = pg.pairwise_ttests(dv='Scores', within='Time', between='Group',
 			      effects='interaction', data=df)
@@ -324,136 +318,81 @@ pg.print_table(posthocs)
             <caption>POST HOC TESTS</caption>
             <thead>
               <tr>
-                <th>Time </th>
-                <th>A </th>
-                <th>B </th>
+                <th>Time</th>
+                <th>A</th>
+                <th>B</th>
                 <th>T-val</th>
                 <th>p-unc</th>
-                <th>p-adjust </th>
                 <th>Eff_size</th>
-                <th>Eff_type </th>
+                <th>Eff_type</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>August </td>
+                <td>August</td>
                 <td>Control</td>
                 <td>Meditation</td>
-                <td>0.3160</td>
-                <td>0.7531</td>
-                <td>none </td>
-                <td>0.0805</td>
-                <td>hedges </td>
+                <td>0.7335</td>
+                <td>0.4662</td>
+                <td>0.1869</td>
+                <td>hedges</td>
               </tr>
               <tr>
                 <td>January</td>
                 <td>Control</td>
                 <td>Meditation</td>
-                <td>-1.4337</td>
-                <td>0.1570</td>
-                <td>none </td>
-                <td>-0.3654</td>
-                <td>hedges </td>
+                <td>-1.8244</td>
+                <td>0.0732</td>
+                <td>-0.4649</td>
+                <td>hedges</td>
               </tr>
               <tr>
-                <td>June </td>
+                <td>June</td>
                 <td>Control</td>
                 <td>Meditation</td>
-                <td><b>-4.2007</b></td>
-                <td><b>0.0001</b></td>
-                <td>none </td>
-                <td><b>-1.0705</b></td>
-                <td>hedges </td>
+                <td><b>-2.7443</b></td>
+                <td><b>0.0081</b></td>
+                <td><b>-0.6994</b></td>
+                <td>hedges</td>
               </tr>
             </tbody>
           </table>
+          <p align="justify">Our visual impression is therefore confirmed: there is a <b>significant increase in test scores in the meditator group 12 months after the beginning of the experiment</b> (T=-2.7, p-unc=.0081). The corrected effect size (<a href="http://www.statisticshowto.com/hedges-g/">Hedges g</a>)
+            is approximately 0.70 and can therefore be considered, according to <a href="https://en.wikipedia.org/wiki/Cohen%27s_h#Interpretation">Cohen's rule of thumb</a>, as large.
 
-          <p align="justify">Our visual impression is therefore confirmed: there is a <b>significant increase in test scores in the meditator group 12 months after the beginning of the experiment</b> (T=-4.2, p-unc=.0001). The corrected effect size (<a href="http://www.statisticshowto.com/hedges-g/">Hedges g</a>) is superior to 1.0 and can therefore be considered, according to <a href="https://en.wikipedia.org/wiki/Cohen%27s_h#Interpretation">Cohen's rule of thumb</a>, as very large.
+            <ul class="actions" align="center">
+              <li><a href="images/tutorials/pingouin/pingouin_data.zip" class="button special icon fa-download" download>Download the data for this tutorial</a></li>
+            </ul>
 
-          <ul class="actions" align="center">
-            <li><a href="images/tutorials/pingouin/pingouin_data.zip" class="button special icon fa-download" download>Download the data for this tutorial</a></li>
-          </ul>
+            <hr />
 
-          <hr />
+            <h4>Appendix</h4>
 
-          <h4>Appendix</h4>
+            <h5>Correction for multiple comparisons</h5>
 
-          <h5>Correction for multiple comparisons</h5>
+            <p align="justify">If you have a large number of groups and/or measurements, you might want to correct the p-values for multiple comparisons. This can be done very easily using the <em>padjust</em> argument of the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests"
+                target="_blank">pairwise_ttests</a> function:</p>
 
-					<p align="justify">If you have a large number of groups and/or measurements, you might want to correct the p-values for multiple comparisons. This can be done very easily using the <em>padjust</em> argument of the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests" target="_blank">pairwise_ttests</a> function:</p>
-
-          <pre><code class="python">posthocs = pg.pairwise_ttests(dv='Scores', within='Time', between='Group',
+            <pre><code class="python">posthocs = pg.pairwise_ttests(dv='Scores', within='Time', between='Group',
 			      effects='interaction', data=df, padjust='holm')
 pg.print_table(posthocs)
 </code></pre>
 
-          <br>
+            <p align="justify"></p>
 
-          <table>
-            <caption>HOLM-CORRECTED POST HOC TESTS</caption>
-            <thead>
-              <tr>
-                <th>Time </th>
-                <th>A </th>
-                <th>B </th>
-                <th>T-val</th>
-                <th>p-unc</th>
-                <th>p-corr</th>
-                <th>p-adjust </th>
-                <th>Eff_size</th>
-                <th>Eff_type </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>August </td>
-                <td>Control</td>
-                <td>Meditation</td>
-                <td>0.3160</td>
-                <td>0.7531</td>
-                <td>0.7531</td>
-                <td>holm </td>
-                <td>0.0805</td>
-                <td>hedges </td>
-              </tr>
-              <tr>
-                <td>January</td>
-                <td>Control</td>
-                <td>Meditation</td>
-                <td>-1.4337</td>
-                <td>0.1570</td>
-                <td>0.3140</td>
-                <td>holm </td>
-                <td>-0.3654</td>
-                <td>hedges </td>
-              </tr>
-              <tr>
-                <td>June </td>
-                <td>Control</td>
-                <td>Meditation</td>
-                <td>-4.2007</td>
-                <td>0.0001</td>
-                <td><b>0.0003</b></td>
-                <td>holm </td>
-                <td>-1.0705</td>
-                <td>hedges </td>
-              </tr>
-            </tbody>
-          </table>
+            <h5>Missing values and unbalanced design</h5>
 
-          <p align="justify"></p>
+            <p align="justify">If one subject has one or more missing observations(for example, no tests scores in January), you might want to remove this subject from the ANOVA and post-hocs analyses. This is possible using the <code>remove_na=True</code> argument of the
+              <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.mixed_anova.html#pingouin.mixed_anova" target="_blank">mixed_anova</a> function. Subjects with missing observations will be automatically removed when computing
+              post-hoc analyses.
+              <br><br>On another note, Pingouin also works well with unbalanced design (i.e. different number of students per group). Please find an example in the full script of this tutorial (link above).</p>
 
-          <h5>Missing values and unbalanced design</h5>
+            <h5>Further reading</h5>
 
-          <p align="justify">If one subject has one or more missing observations(for example, no tests scores in January), you might want to remove this subject from the ANOVA and post-hocs analyses. This is possible using the <code>remove_na=True</code> argument of the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.mixed_anova.html#pingouin.mixed_anova" target="_blank">mixed_anova</a> function. Subjects with missing observations will be automatically removed when computing post-hoc analyses.
-          <br><br>On another note, Pingouin also works well with unbalanced design (i.e. different number of students per group). Please find an example in the full script of this tutorial (link above).</p>
-
-					<h5>Further reading</h5>
-
-					<ul>
-						<li><a href="https://www.frontiersin.org/articles/10.3389/fpsyg.2013.00863/full" target="_blank">Lakens et al 2013</a>:<i> Calculating and reporting effect sizes to facilitate cumulative science: a practical primer for t-tests and ANOVAs.</i></li>
-						<li><a href="https://www.nature.com/articles/nmeth.3293#t1" target="_blank">Altman et Krzywinski 2015</a>:<i> Points of Significance: Split plot design.</i></li>
-					</ul>
+            <ul>
+              <li><a href="https://www.frontiersin.org/articles/10.3389/fpsyg.2013.00863/full" target="_blank">Lakens et al 2013</a>:<i> Calculating and reporting effect sizes to facilitate cumulative science: a practical primer for t-tests and ANOVAs.</i></li>
+              <li><a href="https://www.nature.com/articles/nmeth.3293#t1" target="_blank">Altman et Krzywinski 2015</a>:<i> Points of Significance: Split plot design.</i></li>
+            </ul>
 
       </div>
 
