@@ -135,11 +135,11 @@ plt.title("Welch's periodogram")
 plt.xlim([0, 20])
 </code></pre>
 
-        <span class="image"><img src="images/tutorials/bandpower/psd.png" alt="" /></span>
+        <span class="image fit"><img src="images/tutorials/bandpower/psd.png" alt="" /></span>
 
 
         <p align="justify">The freqs vector contains the x-axis (frequency bins) and the psd vector contains the y-axis (power spectral density). The units of the power spectral density, when working with EEG data, is Volts-squared per Hz (V^2/Hz).
-          <br><br> Note that here we truncated the x-axis to 20Hz, but technically it goes as far as the Nyquist frequency which is half the sampling frequency of the signal.
+          <br><br> Note that the x-axis goes as far as the Nyquist frequency which is half the sampling frequency of the signal (50 Hz).
           <br><br> Now, before computing the average delta bandpower, we need to find the frequency bins that intersect our delta band (defined by the range 0.5 to 4 Hz).</p>
 
         <pre><code class="python"># Define delta lower and upper limits
@@ -159,7 +159,7 @@ plt.ylim([0, psd.max() * 1.1])
 plt.title("Welch's periodogram")
 </code></pre>
 
-        <span class="image"><img src="images/tutorials/bandpower/psd_area.png" alt="" /></span>
+        <span class="image fit"><img src="images/tutorials/bandpower/psd_area.png" alt="" /></span>
 
 
         <hr />
