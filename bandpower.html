@@ -79,34 +79,45 @@
           <h3>Compute the average bandpower of an EEG signal.</h3>
         </header>
 
-        <p align="justify">Welcome to this first tutorial on EEG signal processing in Python. In this first part, we are going to see how to compute the average bandpower of a signal across a specific frequency range.</p>
+        <p align="justify">Welcome to this first tutorial on EEG signal processing in Python!
+        <br><br> In this first part, we are going to see how to compute the average bandpower of a signal across a specific frequency range.
+        <br><br>
+        One of the most popular technique to analyze EEG data is to decompose the signal into functionally distinct frequency bands, such as delta (0.5–4 Hz), theta (4–7 Hz), alpha (8–12 Hz), beta (12–30 Hz), and gamma (30–100 Hz). This implies the decomposition of the EEG signal into frequency bands, which is commonly achieved through <a href="https://en.wikipedia.org/wiki/Fourier_transform" target="_blank">Fourier transforms</a>.<br></p>
+
+        <span class="image fit"><img src="images/tutorials/bandpower/brain_waves.png" alt="Brain waves"/></span>
+
+        <p align="justify">While several type of analyses can be performed with frequency bands, I am going to focus here on a very simple one: the <b>average band power</b>. For instance, if you are looking at EEG sleep data and are interested in slow-wave sleep (N3 sleep), which are characterized by high delta activity, you might want to know "what is the average power of the delta frequency band during slow-wave sleep?".
+        <br><br>Typically, higher delta values indicate a higher amount of slow-waves and are associated with increased subjective sleep quality (sleep is more "refreshing"). Using that simple metric, it becomes easy to compare objective sleep quality between groups (e.g. insomniacs versus control, old vs young...) or within individuals.</p>
 
         <hr />
 
         <h4>Data loading</h4>
 
-        <p align="justify">For the sake of this tutorial, please find below a short single-channel 30-seconds extract of N3 (deep) sleep data from one individual. The sampling frequency is 100 Hz and the total duration is 30 seconds (= 3000 data points).</p>
+        <p align="justify">For the sake of this tutorial, please find below a 30-seconds extract of real slow-wave sleep from one young individual. The sampling frequency is 100 Hz and the channel is F3.</p>
 
         <ul class="actions" align="center">
           <li><a href="images/tutorials/bandpower/data.txt" class="button special icon fa-download" download>Download the raw data (.txt) for this tutorial</a></li>
         </ul>
 
-        <p align="justify">Loading the data is fairly easy:</p>
+        <p align="justify">Time to open your favorite Python editor! Loading the data is fairly easy:</p>
 
         <pre><code class="python">import numpy as np
 data = np.loadtxt('data.txt')</code></pre>
 
-        <p align="justify">Let's take a look at the data. Note that I used the seaborn package rather than matplotlib to make nicer figures. To plot the data using matplotlib:</p>
+        <p align="justify">Let's take a look at the data:</p>
 
         <pre><code class="python">import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set(font_scale=1.2)
 sf = 100.
 time = np.arange(data.size) / sf
 fig, ax = plt.subplots(1, 1, figsize=(12, 4))
-plt.plot(time, data, lw=1)
+plt.plot(time, data, lw=1.5, color='k')
 plt.xlabel('Time (seconds)')
 plt.ylabel('Voltage')
 plt.xlim([time.min(), time.max()])
 plt.title('N3 sleep EEG data (F3)')
+sns.despine()
 </code></pre>
 
         <span class="image fit"><img src="images/tutorials/bandpower/signal.png" alt="" /></span>
@@ -115,11 +126,8 @@ plt.title('N3 sleep EEG data (F3)')
 
         <h4>Computing the power spectral density</h4>
 
-        <p align="justify">Now let's say that you want to compute the average power of the Delta frequency band (0.5 - 4.5 Hz). To do that, we first need to compute an estimate of the power spectral density. The most widely-used method to do that is the Fourier transform,
-          and specifically via the Welch's periodogram (in short, average of consecutive Fourier transform on small windows of the signal). The Welch's method allows to improve the accuracy of the classic periodogram and as such is sometimes called a
-          modified periodogram.
-          <br><br> Because our lower frequency of the delta band is 0.5 Hz, it means that a full cycle is completed every two seconds (= 1 / 0.5). To get a sufficient resolution, we will therefore multiply this value by two to get a window length of 4
-          seconds.
+        <p align="justify">Now let's say that you want to compute the average power of the Delta frequency band (0.5 - 4.5 Hz). To do that, we first need to compute an estimate of the <a href="https://en.wikipedia.org/wiki/Spectral_density" target="_blank">power spectral density</a>. The most widely-used method to do that is the <a href="https://en.wikipedia.org/wiki/Welch%27s_method" target="_blank">Welch's periodogram</a>, which consists in squaring and averaging consecutive Fourier transform of small windows of the signal, with or without overlapping. The Welch's method allows to improve the accuracy of the classic periodogram and as such is sometimes called a modified periodogram.
+        <br><br> Because the lower limit of the delta band is 0.5 Hz, it means that a full cycle is completed every two seconds (= 1 / 0.5). To get a sufficient resolution, we need at least two full cycles, i.e. a window length of 4 seconds.
         </p>
 
         <pre><code class="python">from scipy import signal
@@ -127,20 +135,27 @@ nperseg = 4 * sf
 freqs, psd = signal.welch(data, sf, nperseg=nperseg, scaling='density')
 
 # Plot the power spectrum
-plt.plot(freqs, psd)
+sns.set(font_scale=1.2, style='white')
+plt.figure(figsize=(8, 4))
+plt.plot(freqs, psd, color='k', lw=2)
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Power spectral density (V^2 / Hz)')
 plt.ylim([0, psd.max() * 1.1])
 plt.title("Welch's periodogram")
 plt.xlim([0, 20])
+sns.despine()
 </code></pre>
 
         <span class="image fit"><img src="images/tutorials/bandpower/psd.png" alt="" /></span>
 
 
-        <p align="justify">The freqs vector contains the x-axis (frequency bins) and the psd vector contains the y-axis (power spectral density). The units of the power spectral density, when working with EEG data, is Volts-squared per Hz (V^2/Hz).
-          <br><br> Note that the x-axis goes as far as the Nyquist frequency which is half the sampling frequency of the signal (50 Hz).
-          <br><br> Now, before computing the average delta bandpower, we need to find the frequency bins that intersect our delta band (defined by the range 0.5 to 4 Hz).</p>
+        <p align="justify">The freqs vector contains the x-axis (frequency bins) and the psd vector contains the y-axis (power spectral density). The units of the power spectral density, when working with EEG data, is Volts-squared per Hz (V^2/Hz).</p>
+
+        <ul class="feature-icons">
+          <li class="fa-exclamation-triangle">Note that the maximum value of the x-axis is half the sampling frequency (<a href="https://en.wikipedia.org/wiki/Nyquist_frequency" target="_blank">Nyquist frequency</a>)</li>
+        </ul>
+
+        <p align="justify">Now, before computing the average delta bandpower, we need to find the frequency bins that intersect our delta band (defined by the range 0.5 to 4 Hz).</p>
 
         <pre><code class="python"># Define delta lower and upper limits
 low, high = 0.5, 4
@@ -150,13 +165,21 @@ idx_delta = np.zeros(dtype=bool, shape=freqs.shape)
 idx_delta[idx_min:idx_max] = True
 
 # Plot the power spectral density and fill the area comprising the delta band
-plt.plot(freqs, psd)
-plt.fill_between(freqs, psd, where=idx_delta)
+plt.figure(figsize=(8, 4))
+plt.plot(freqs, psd, lw=2, color='k')
+
+# plt.fill_between does not count the first and last True values of idx_delta
+idx_fill = idx_delta.copy()
+idx_fill[idx_min-1:idx_max+1]= True
+plt.fill_between(freqs, psd, where=idx_fill)
+
+# Axes and labels
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Power spectral density (V^2 / Hz)')
 plt.xlim([0, 10])
 plt.ylim([0, psd.max() * 1.1])
 plt.title("Welch's periodogram")
+sns.despine()
 </code></pre>
 
         <span class="image fit"><img src="images/tutorials/bandpower/psd_area.png" alt="" /></span>
@@ -166,9 +189,9 @@ plt.title("Welch's periodogram")
 
         <h4>Average bandpower</h4>
 
-        <p align="justify">The total, absolute, delta power is equals to the blue area of the previous plot. As there is no closed-form formula to integrate this area, we need to approximate it by using the composite trapezoidal rule. The idea behind it is actually very simple: we decompose this area into several trapezoids and then sum the area of these trapezoids. This is not limited to trapezoids and could also be computed using rectangle.</p>
+        <p align="justify">The absolute delta power is equals to the blue area of the previous plot. As there is no closed-form formula to integrate this area, we need to approximate it by using the <a href="https://en.wikipedia.org/wiki/Trapezoidal_rule" target="_blank">composite trapezoidal rule</a>. The idea behind it is actually very simple: we decompose this area into several trapezoids and then sum the area of these trapezoids. This is not limited to trapezoids and could also be computed using rectangle (e.g. in the Matlab <a href="https://www.mathworks.com/help/signal/ref/bandpower.html" target="_blank">bandpower</a> function).</p>
 
-<pre><code class="python"># Approximation of the area under the curve using the trapezoid rule
+<pre><code class="python"># Compute the absolute delta power by approximating the area under the curve
 delta_power = np.trapz(psd[idx_delta], freqs[idx_delta])
 print('Absolute delta power: %.3f V^2' % delta_power)
 </code></pre>
@@ -183,6 +206,74 @@ print('Relative delta power: %.3f' % delta_rel_power)
 
 <p align="justify"><b>Relative delta power:</b> 0.769 <br>
 In other words, 76.9% of the total power of the signal is contained in the delta frequency band.</p>
+
+<hr />
+
+<h4>Generalization</h4>
+
+<p align="justify">The function below is a generalization of the above, that can be used to easily get the average absolute or relative power in a specific frequency band. It is very similar to the Matlab <a href="https://www.mathworks.com/help/signal/ref/bandpower.html" target="_blank">bandpower</a> function, the two main differences being that it uses a Welch's periodogram instead of a classical periodogram, and trapezoids instead of rectangle to approximate the area.</p>
+
+<pre><code class="python">def bandpower(data, sf, band, window_sec=None, relative=False):
+    """Compute the average power of the signal x in a specific frequency band.
+
+    Parameters
+    ----------
+    data : 1d-array
+        Input signal in the time-domain.
+    sf : float
+        Sampling frequency of the data.
+    band : list
+        Lower and upper frequencies of the band of interest.
+    window_sec : float
+        Length of each window in seconds.
+        If None, window_sec = (1 / min(band)) * 2
+    relative : boolean
+        If True, return the relative power (= divided by the total power of the signal).
+        If False (default), return the absolute power.
+
+    Return
+    ------
+    bp : float
+        Absolute or relative band power.
+
+    Examples
+    ------
+    1. Absolute and relative power in the delta band
+        >>> delta = bandpower(data, 100, [0.5, 4])
+        >>> delta_relative = bandpower(data, 100, [0.5, 4], relative=True)
+
+    2. Delta / beta ratio
+        >>> window_sec = 4
+        >>> delta = bandpower(data, 100, [0.5, 4], window_sec)
+        >>> beta = bandpower(data, 100, [12, 30], window_sec)
+        >>> db_ratio = delta / beta
+    """
+    import numpy as np
+    from scipy.signal import welch
+    band = np.asarray(band)
+    low, high = band
+
+    # Compute the modified periodogram (Welch)
+    if window_sec is not None:
+        nperseg = window_sec * sf
+    else:
+        nperseg = (2 / low) * sf
+
+    freqs, psd = welch(data, sf, nperseg=nperseg, scaling='density')
+
+    # Find closest indices of band in frequency vector
+    idx_min = np.argmax(freqs > low) - 1
+    idx_max = np.argmax(freqs > high) - 1
+    idx_band = np.zeros(dtype=bool, shape=freqs.shape)
+    idx_band[idx_min:idx_max] = True
+
+    # Integral approximation of the spectrum using the trapezoid rule
+    bp = np.trapz(psd[idx_band], freqs[idx_band])
+
+    if relative:
+        bp /= np.trapz(psd, freqs)
+    return bp
+</code></pre>
 
 
       </div>
