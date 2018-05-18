@@ -166,7 +166,7 @@ plt.title("Welch's periodogram")
 
         <h4>Average bandpower</h4>
 
-        <p align="justify">The total, absolute, delta power is equals to the blue area of the previous plot. As there is no closed-form formula to integrate this area, we need to approximate it by using the composite trapezoidal rule (trapz function of NumPy). The idea behind it is actually very simple: we decompose this area into several trapezoids and then sum the area of these trapezoids. This is not limited to trapezoids and could also be computed using rectangle.</p>
+        <p align="justify">The total, absolute, delta power is equals to the blue area of the previous plot. As there is no closed-form formula to integrate this area, we need to approximate it by using the composite trapezoidal rule. The idea behind it is actually very simple: we decompose this area into several trapezoids and then sum the area of these trapezoids. This is not limited to trapezoids and could also be computed using rectangle.</p>
 
 <pre><code class="python"># Approximation of the area under the curve using the trapezoid rule
 delta_power = np.trapz(psd[idx_delta], freqs[idx_delta])
