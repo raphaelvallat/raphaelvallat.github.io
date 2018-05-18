@@ -96,7 +96,7 @@
         <pre><code class="python">import numpy as np
 data = np.loadtxt('data.txt')</code></pre>
 
-        <p align="justify">To see what the data looks like:</p>
+        <p align="justify">Let's take a look at the data. Note that I used the seaborn package rather than matplotlib to make nicer figures. To plot the data using matplotlib:</p>
 
         <pre><code class="python">import matplotlib.pyplot as plt
 sf = 100.
@@ -173,7 +173,7 @@ delta_power = np.trapz(psd[idx_delta], freqs[idx_delta])
 print('Absolute delta power: %.3f V^2' % delta_power)
 </code></pre>
 
-<p>Absolute delta power: 313.026 V^2</p>
+<p><b>Absolute delta power:</b> 313.026 volts-squared</p>
 
 <pre><code class="python"># Relative delta power (expressed as a percentage of total power)
 total_power = np.trapz(psd, freqs)
@@ -181,7 +181,8 @@ delta_rel_power = delta_power / total_power
 print('Relative delta power: %.3f' % delta_rel_power)
 </code></pre>
 
-<p align="justify">Relative delta power: 0.769 (i.e. 76.9% of the total power of the signal is contained in the delta frequency band.)</p>
+<p align="justify"><b>Relative delta power:</b> 0.769 <br>
+In other words, 76.9% of the total power of the signal is contained in the delta frequency band.</p>
 
 
       </div>
