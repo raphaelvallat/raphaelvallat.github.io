@@ -233,8 +233,6 @@ print('Relative delta power: %.3f' % delta_rel_power)
 
         <p align="justify">In other words, 76.9% of the total power of the signal is contained in the delta frequency band.</p>
 
-        <blockquote><b>Relative &delta; power:</b> 0.769</blockquote>
-
         <hr />
 
         <h4>Generalization</h4>
@@ -307,7 +305,7 @@ print('Relative delta power: %.3f' % delta_rel_power)
 
 <h4>Ratio  between two frequency bands</h4>
 
-<p align="justify">It is also very common to report the ratios between two frequency bands. For instance, the delta / beta ratio is a well-known index of slow-wave sleep quality. When computing ratios between two bands, it is important to control that the window_length of the periodogram is the same for the two bands. Indeed, if you are using a different window length for the two bands, this will result in two different periodograms and the ratio will therefore be meaningless.</p>
+<p align="justify">It is also very common to report the ratios between two frequency bands. For instance, the delta / beta ratio is a well-known index of slow-wave sleep quality. When computing ratios between two bands, it is important to control that the window length of the periodogram is the same for the two bands. Indeed, if you are using a different window length for the two bands, this will result in two different periodograms and the ratio will therefore be meaningless.</p>
 
 <pre><code class="python"># Define the duration of the window to be 4 seconds
 win = 4
