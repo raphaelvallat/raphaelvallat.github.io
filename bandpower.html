@@ -206,7 +206,7 @@ sns.despine()
 
         <hr />
 
-        <h4>Average bandpower</h4>
+        <h4>Average band power</h4>
 
         <p align="justify">The absolute delta power is equals to the blue area of the previous plot. As there is no closed-form formula to integrate this area, we need to approximate it by using the <a href="https://en.wikipedia.org/wiki/Trapezoidal_rule" target="_blank">composite trapezoidal rule</a>.
           The idea behind it is actually very simple: we decompose this area into several trapezoids and then sum the area of these trapezoids. This is not limited to trapezoids and could also be computed using rectangle (e.g. in the Matlab <a href="https://www.mathworks.com/help/signal/ref/bandpower.html"
@@ -219,6 +219,8 @@ print('Absolute delta power: %.3f V^2' % delta_power)
 
         <blockquote><b>Absolute &delta; power:</b> 313.026 volts-squared</blockquote>
 
+        <h5>Relative power</h5>
+
         <p align="justify">In practice, rather than reporting the absolute band power, one may want to express the power in a frequency band as a percentage of the total power of the signal. This is called the relative band power. It can be calculated very easily from the above:</p>
 
         <pre><code class="python"># Relative delta power (expressed as a percentage of total power)
@@ -230,6 +232,8 @@ print('Relative delta power: %.3f' % delta_rel_power)
         <blockquote><b>Relative &delta; power:</b> 0.769</blockquote>
 
         <p align="justify">In other words, 76.9% of the total power of the signal is contained in the delta frequency band.</p>
+
+        <blockquote><b>Relative &delta; power:</b> 0.769</blockquote>
 
         <hr />
 
@@ -298,6 +302,25 @@ print('Relative delta power: %.3f' % delta_rel_power)
         bp /= np.trapz(psd, freqs)
     return bp
 </code></pre>
+
+<hr />
+
+<h4>Ratio  between two frequency bands</h4>
+
+<p align="justify">It is also very common to report the ratios between two frequency bands. For instance, the delta / beta ratio is a well-known index of slow-wave sleep quality. When computing ratios between two bands, it is important to control that the window_length of the periodogram is the same for the two bands. Indeed, if you are using a different window length for the two bands, this will result in two different periodograms and the ratio will therefore be meaningless.</p>
+
+<pre><code class="python"># Define the duration of the window to be 4 seconds
+win = 4
+
+# Delta/beta ratio based on the absolute power
+db = bandpower(data, sf, [0.5, 4], win) / bandpower(data, sf, [12, 30], win)
+
+# Delta/beta ratio based on the relative power
+db_rel = bandpower(data, sf, [0.5, 4], win, True) / bandpower(data, sf, [12, 30], win, True)
+</code></pre>
+
+<blockquote><b>&delta;/&beta; ratio (absolute)</b>: 41.044<br>
+<b>&delta;/&beta; ratio (relative)</b>: 41.044</blockquote>
 
 <hr />
 
