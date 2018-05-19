@@ -146,8 +146,8 @@ sns.despine()
         <pre><code class="python">from scipy import signal
 
 # Define window length (4 seconds)
-nperseg = 4 * sf
-freqs, psd = signal.welch(data, sf, nperseg=nperseg, scaling='density')
+win = 4 * sf
+freqs, psd = signal.welch(data, sf, nperseg=win, scaling='density')
 
 # Plot the power spectrum
 sns.set(font_scale=1.2, style='white')
@@ -308,7 +308,7 @@ print('Relative delta power: %.3f' % delta_rel_power)
 <p align="justify">It is also very common to report the ratios between two frequency bands. For instance, the delta / beta ratio is a well-known index of slow-wave sleep quality. When computing ratios between two bands, it is important to control that the window length of the periodogram is the same for the two bands. Indeed, if you are using a different window length for the two bands, this will result in two different periodograms and the ratio will therefore be meaningless.</p>
 
 <pre><code class="python"># Define the duration of the window to be 4 seconds
-win = 4
+win = 4 * sf
 
 # Delta/beta ratio based on the absolute power
 db = bandpower(data, sf, [0.5, 4], win) / bandpower(data, sf, [12, 30], win)
