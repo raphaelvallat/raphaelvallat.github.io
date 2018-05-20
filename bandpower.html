@@ -245,7 +245,7 @@ print('Relative delta power: %.3f' % delta_rel_power)
         <h4>Generalization</h4>
 
         <p align="justify">The function below is a generalization of the above which can be used to easily get the average absolute or relative power in a specific frequency band. It is very similar to the Matlab <a href="https://www.mathworks.com/help/signal/ref/bandpower.html"
-            target="_blank">bandpower</a> function, the two main differences being that it uses a Welch's periodogram instead of a classical periodogram, and trapezoids instead of rectangle to approximate the area.</p>
+            target="_blank">bandpower</a> function, the two main differences being that it uses a Welch's periodogram instead of a classical periodogram, and parabola instead of rectangle to approximate the area.</p>
 
         <pre><code class="python">def bandpower(data, sf, band, window_sec=None, relative=False):
     """Compute the average power of the signal x in a specific frequency band.
