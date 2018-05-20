@@ -101,10 +101,15 @@
 
         <h4>Data loading</h4>
 
+
         <p align="justify">For the sake of this tutorial, please find below a 30-seconds extract of real slow-wave sleep from one young individual. The sampling frequency is 100 Hz and the channel is F3.</p>
 
         <ul class="actions" align="center">
-          <li><a href="images/tutorials/bandpower/data.txt" class="button special icon fa-download" download>Download the raw data (.txt) for this tutorial</a></li>
+          <li><a href="images/tutorials/bandpower/data.txt" class="button special icon fa-download" download>Download the raw EEG data (.txt, ~200 Ko)</a></li>
+        </ul>
+
+        <ul class="actions" align="center">
+        <li><a href="https://gist.github.com/raphaelvallat/c48d199f9ccfb5a3848043a94b56f451" class="button icon fa-download" download>Download the Jupyter notebook (.ipynb)</a></li>
         </ul>
 
         <p align="justify">Time to open your favorite Python editor! Loading the data is fairly easy:</p>
@@ -209,16 +214,17 @@ sns.despine()
 
         <h4>Average band power</h4>
 
-        <p align="justify">The absolute delta power is equals to the blue area of the previous plot. As there is no closed-form formula to integrate this area, we need to approximate it by using the <a href="https://en.wikipedia.org/wiki/Trapezoidal_rule" target="_blank">composite trapezoidal rule</a>.
-          The idea behind it is actually very simple: we decompose this area into several trapezoids and then sum the area of these trapezoids. This is not limited to trapezoids and could also be computed using rectangle (e.g. in the Matlab <a href="https://www.mathworks.com/help/signal/ref/bandpower.html"
-            target="_blank">bandpower</a> function).</p>
+        <p align="justify">The absolute delta power is equals to the blue area of the previous plot. As there is no closed-form formula to integrate this area, we need to approximate it. This is commonly achieved using the <a href="https://en.wikipedia.org/wiki/Simpson%27s_rule" target="_blank">composite Simpson's rule</a>.
+         The idea behind it is actually very simple: we decompose this area into several parabola and then sum the area of these parabola. Note that this could also be done using trapezoid (trapezoid rule) or rectangle (as in the Matlab <a href="https://www.mathworks.com/help/signal/ref/bandpower.html"
+        target="_blank">bandpower</a> function), but parabola typically give better estimates.</p>
 
         <pre><code class="python"># Compute the absolute power by approximating the area under the curve
-delta_power = np.trapz(psd[idx_delta], freqs[idx_delta])
+from scipy.integrate import simps
+delta_power = simps(psd[idx_delta], freqs[idx_delta])
 print('Absolute delta power: %.3f V^2' % delta_power)
 </code></pre>
 
-        <blockquote><b>Absolute &delta; power:</b> 313.026 volts-squared</blockquote>
+        <blockquote><b>Absolute &delta; power:</b> 315.253 volts-squared</blockquote>
 
         <h5>Relative power</h5>
 
@@ -230,9 +236,9 @@ delta_rel_power = delta_power / total_power
 print('Relative delta power: %.3f' % delta_rel_power)
 </code></pre>
 
-        <blockquote><b>Relative &delta; power:</b> 0.769</blockquote>
+        <blockquote><b>Relative &delta; power:</b> 0.774</blockquote>
 
-        <p align="justify">In other words, 76.9% of the total power of the signal is contained in the delta frequency band.</p>
+        <p align="justify">In other words, 77.4% of the total power of the signal is contained in the delta frequency band.</p>
 
         <hr />
 
@@ -277,6 +283,7 @@ print('Relative delta power: %.3f' % delta_rel_power)
         >>> db_ratio = delta / beta
     """
     from scipy.signal import welch
+    from scipy.integrate import simps
     band = np.asarray(band)
     low, high = band
 
@@ -294,11 +301,11 @@ print('Relative delta power: %.3f' % delta_rel_power)
     idx_band = np.zeros(dtype=bool, shape=freqs.shape)
     idx_band[idx_min:idx_max] = True
 
-    # Integral approximation of the spectrum using the trapezoid rule
-    bp = np.trapz(psd[idx_band], freqs[idx_band])
+    # Integral approximation of the spectrum using Simpson's rule.
+    bp = simps(psd[idx_band], freqs[idx_band])
 
     if relative:
-        bp /= np.trapz(psd, freqs)
+        bp /= simps(psd, freqs)
     return bp
 </code></pre>
 
@@ -318,8 +325,8 @@ db = bandpower(data, sf, [0.5, 4], win_sec) / bandpower(data, sf, [12, 30], win_
 db_rel = bandpower(data, sf, [0.5, 4], win_sec, True) / bandpower(data, sf, [12, 30], win_sec, True)
 </code></pre>
 
-<blockquote><b>&delta;/&beta; ratio (absolute)</b>: 41.044<br>
-<b>&delta;/&beta; ratio (relative)</b>: 41.044</blockquote>
+<blockquote><b>&delta;/&beta; ratio (absolute)</b>: 41.501<br>
+<b>&delta;/&beta; ratio (relative)</b>: 41.501</blockquote>
 
 <hr />
 
