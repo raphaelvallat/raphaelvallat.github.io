@@ -441,20 +441,20 @@ db_rel = bandpower(data, sf, [0.5, 4], win_sec, True) / bandpower(data, sf, [12,
 
               <p align="justify">Let's try our new function with the code below. One advantage of the Multitaper method compared to the Welch's method is that we don't need to specify a window duration as it will basically compute the periodogram on the whole signal.</p>
 
-              <pre><code class="python"># Multitaper delta power
-  bp = bandpower(data, sf, [0.5, 4], 'multitaper')
-  bp_rel = bandpower(data, sf, [0.5, 4], 'multitaper', relative=True)
-  print('Absolute delta power: %.3f' % bp)
-  print('Relative delta power: %.3f' % bp_rel)
+            <pre><code class="python"># Multitaper delta power
+bp = bandpower(data, sf, [0.5, 4], 'multitaper')
+bp_rel = bandpower(data, sf, [0.5, 4], 'multitaper', relative=True)
+print('Absolute delta power: %.3f' % bp)
+print('Relative delta power: %.3f' % bp_rel)
 
-  # Delta-beta ratio
-  # One advantage of the multitaper is that we don't need to define a window length.
-  db = bandpower(data, sf, [0.5, 4], 'multitaper') / bandpower(data, sf, [12, 30], 'multitaper')
-  # Ratio based on the relative power
-  db_rel = bandpower(data, sf, [0.5, 4], 'multitaper', relative=True) / \
-                      bandpower(data, sf, [12, 30], 'multitaper', relative=True)
-  print('Delta/beta ratio (absolute): %.3f' % db)
-  print('Delta/beta ratio (relative): %.3f' % db_rel)
+# Delta-beta ratio
+# One advantage of the multitaper is that we don't need to define a window length.
+db = bandpower(data, sf, [0.5, 4], 'multitaper') / bandpower(data, sf, [12, 30], 'multitaper')
+# Ratio based on the relative power
+db_rel = bandpower(data, sf, [0.5, 4], 'multitaper', relative=True) / \
+                    bandpower(data, sf, [12, 30], 'multitaper', relative=True)
+print('Delta/beta ratio (absolute): %.3f' % db)
+print('Delta/beta ratio (relative): %.3f' % db_rel)
 </code></pre>
 
               <blockquote>
@@ -464,9 +464,9 @@ db_rel = bandpower(data, sf, [0.5, 4], win_sec, True) / bandpower(data, sf, [12,
                 <b>&delta;/&beta; ratio (relative)</b>: 41.020
               </blockquote>
 
-              <p align="justify">The results are very close to the one obtained using Welch's method. This should remain true as long as your data are not too noisy. However, if you are working with noisy data, the multitaper method will almost always provide a much more
+              <p align="justify">The results are very close to the one obtained using Welch's method. This should remain true as long as your data are not too noisy. However, if you are working with noisy data, the multitaper method will always provide a much more
                 robust spectral estimation than Welch's.
-                <br><br>Just for fun, let's compare the power spectral density estimate obtained using a classical periodogram, a Welch's periodogram, and the multitaper method:</p>
+                <br><br>Just for fun, let's compare the power spectral density estimate obtained using a classic periodogram, a Welch's periodogram, and the multitaper method:</p>
 
               <pre><code class="python">def plot_spectrum_methods(data, sf, window_sec, band=None, dB=False):
     """Plot the periodogram, Welch's and multitaper PSD.
@@ -555,7 +555,7 @@ plot_spectrum_methods(data, sf, 4, [0.5, 2], dB=True)
               </blockquote>
 
               <p align="justify">The multitaper is more computationally intensive than other methods. In the example above, the multitaper method was about 200 times slower than the Welch's method. Using 30-sec of data sampled at 100Hz, the difference in the time of execution
-                was about ~70ms. Imagine now having 6 hour of data sampled at 1000Hz, it would take about 3 seconds to compute the periodogram using Welch's method, but almost 10 minutes using the multitaper method!
+                was about ~70ms. Imagine now having 6 hours of data sampled at 1000Hz, it would take about 3 seconds to compute the periodogram using Welch's method, but almost 10 minutes using the multitaper method!
                 <br><br>While the multitaper methods always provide a more robust spectral estimation, I think that it is important to understand that the spectral estimation is case-specific. For example, if you have clean data acquired on young healthy
                 individuals, there's a good chance that the multitaper spectral estimation will not differ that much from the Welch's estimate. Furthermore, the Welch's method is probably the most used spectral estimation technique to this day and is
                 quite intuitive to understand. By contrast, the multitaper is a relatively new method that is conceptually quite hard to grasp (notably the computation of the Slepian sequences).
@@ -563,7 +563,7 @@ plot_spectrum_methods(data, sf, 4, [0.5, 2], dB=True)
 
                   <h5>Multitaper spectrogram?</h5>
 
-                  <p align="justify">It is also possible to compute a spectrogram (time in the x-axis, spectral density on the y-axis) using the multitaper method. For instance, the <a href="http://visbrain.org/sleep" target="_blank">Sleep module of the Visbrain suite</a>                    (disclaimer: for which I am a co-founder!) include an option to display a classic (Fourier), wavelet or multitaper spectrogram. As you can see on the figure below, the multitaper spectrogram is cleaner than the Fourier spectrogram.
+                  <p align="justify">It is also possible to compute a spectrogram (time in the x-axis, spectral density on the y-axis) using the multitaper method. For instance, the <a href="http://visbrain.org/sleep" target="_blank">Sleep module of the Visbrain suite</a> (disclaimer: for which I am a co-founder!) include an option to display a classic (Fourier), wavelet, or multitaper spectrogram. As you can see on the figure below, the multitaper spectrogram is cleaner than the Fourier spectrogram.
                     <p>
 
                       <span class="image fit">
