@@ -156,7 +156,7 @@ sns.despine()
 
               <p align="justify">Now let's say that you want to compute the average power of the Delta frequency band (0.5 - 4.5 Hz). To do that, we first need to compute an estimate of the power spectral density. The most widely-used method to do that is the <a href="https://en.wikipedia.org/wiki/Welch%27s_method"
                   target="_blank">Welch's periodogram</a>, which consists in averaging consecutive Fourier transform of small windows of the signal, with or without overlapping. The Welch's method improves the accuracy of the classic periodogram (i.e. just
-                squaring the amplitude of the FFT obtained on the whole signal). The reason is simple: the EEG data is time-varying, meaning if you look at a 30 seconds sample of EEG data, it is very (very) unlikely that the signal will looks like a sum
+                squaring the amplitude of the FFT obtained on the whole signal). The reason is simple: the EEG data is time-varying, meaning that if you look at a 30 seconds sample of EEG data, it is very (very) unlikely that the signal will looks like a sum
                 of perfect and constant sines. Rather, the spectral content of the EEG changes over time, constantly modified by the neuronal activity at play under the scalp. Problem is, to return a true spectral estimate, a classic periodogram requires
                 the spectral content of the signal to be stationnary (i.e. time-unvarying) over the time period considered. Because it is never the case, the periodogram is generally biased and contains way too much variance (see the end of this tutorial).
                 By averaging the periodograms obtained over short segments of the windows, the Welch's method allows to drastically reduce this variance, at the cost of a loss in the frequency resolution. Indeed, the longer the signal is, the higher the
@@ -208,13 +208,10 @@ idx_delta[idx_min:idx_max] = True
 # Plot the power spectral density and fill the area comprising the delta band
 plt.figure(figsize=(8, 4))
 plt.plot(freqs, psd, lw=2, color='k')
-
 # plt.fill_between does not count the first and last True values of idx_delta
 idx_fill = idx_delta.copy()
 idx_fill[idx_min:idx_max+1]= True
 plt.fill_between(freqs, psd, where=idx_fill)
-
-# Axes and labels
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Power spectral density (V^2 / Hz)')
 plt.xlim([0, 10])
@@ -230,7 +227,7 @@ sns.despine()
 
               <h4>Average band power</h4>
 
-              <p align="justify">The absolute delta power is equals to the blue area of the previous plot. As there is no closed-form formula to integrate this area, we need to approximate it. This is commonly achieved using the <a href="https://en.wikipedia.org/wiki/Simpson%27s_rule"
+              <p align="justify">The absolute delta power is equal to the blue area of the previous plot. As there is no closed-form formula to integrate this area, we need to approximate it. This is commonly achieved using the <a href="https://en.wikipedia.org/wiki/Simpson%27s_rule"
                   target="_blank">composite Simpson's rule</a>. The idea behind it is actually very simple: we decompose this area into several parabola and then sum the area of these parabola. Note that this could also be done using trapezoid (trapezoid
                 rule) or rectangle (as in the Matlab <a href="https://www.mathworks.com/help/signal/ref/bandpower.html" target="_blank">bandpower</a> function), but parabola typically give better estimates.</p>
 
@@ -249,7 +246,7 @@ print('Absolute delta power: %.3f V^2' % delta_power)
               </p>
 
               <pre><code class="python"># Relative delta power (expressed as a percentage of total power)
-total_power = np.trapz(psd, freqs)
+total_power = simps(psd, freqs)
 delta_rel_power = delta_power / total_power
 print('Relative delta power: %.3f' % delta_rel_power)
 </code></pre>
