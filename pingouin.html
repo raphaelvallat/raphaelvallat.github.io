@@ -114,6 +114,7 @@
               <li>One dependant variable: the test scores</li>
               <li>One within-group variable, time of the year, with three levels (August, January, June)</li>
               <li>One between-group variable, Group, with two levels (Control, Meditation)</li>
+              <li>One subject identifier variable, Subject</li>
             </ul>
 
             Let's generate this fake dataset using Pandas:
@@ -136,8 +137,10 @@ meditation = np.r_[ np.random.normal(5.4, size=n),
 
 # Create a dataframe
 df = pd.DataFrame({'Scores': np.r_[control, meditation],
-		   'Time': np.r_[np.repeat(months, n), np.repeat(months, n)],
-                   'Group': np.repeat(['Control', 'Meditation'], len(months) * n)})
+                   'Time': np.r_[np.repeat(months, n), np.repeat(months, n)],
+                   'Group': np.repeat(['Control', 'Meditation'], len(months) * n),
+                   'Subject': np.r_[np.tile(np.arange(n), 3),
+                                    np.tile(np.arange(n, n + n), 3)]})
 </code></pre>
 
           <br>
@@ -146,36 +149,42 @@ df = pd.DataFrame({'Scores': np.r_[control, meditation],
             <caption>DATAFRAME</caption>
             <thead>
               <tr>
-                <th>Group </th>
-                <th> Scores</th>
-                <th>Time </th>
+                <th>Group</th>
+                <th>Scores</th>
+                <th>Time</th>
+                <th>Subject</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>Control</td>
-                <td> 5.9714</td>
+                <td>5.9714</td>
                 <td>August</td>
+                <td>0</td>
               </tr>
               <tr>
                 <td>Control</td>
-                <td> 4.3090</td>
+                <td>4.3090</td>
                 <td>August</td>
+                <td>1</td>
               </tr>
               <tr>
                 <td>Control</td>
-                <td> 6.9327</td>
+                <td>6.9327</td>
                 <td>August</td>
+                <td>2</td>
               </tr>
               <tr>
                 <td>Control</td>
-                <td> 5.1873</td>
+                <td>5.1873</td>
                 <td>August</td>
+                <td>3</td>
               </tr>
               <tr>
                 <td>Control</td>
-                <td> 4.7794</td>
+                <td>4.7794</td>
                 <td>August</td>
+                <td>4</td>
               </tr>
             </tbody>
           </table>
@@ -195,7 +204,7 @@ sns.pointplot(data=df, x='Time', y='Scores', hue='Group', dodge=True, markers=['
 
           <p align="justify">Visually, we can already see a clear improvement of the test scores over time in the meditators group. Let's look at the mean and standard deviations of the data:</p>
 
-          <pre><code class="python">df.groupby(['Time', 'Group']).agg(['mean', 'std'])</code></pre>
+          <pre><code class="python">df.groupby(['Time', 'Group'])['Scores'].agg(['mean', 'std']).round(2)</code></pre>
 
           <br>
 
@@ -213,37 +222,37 @@ sns.pointplot(data=df, x='Time', y='Scores', hue='Group', dodge=True, markers=['
               <tr>
                 <td>August</td>
                 <td>Control</td>
-                <td>5.5082</td>
+                <td>5.51</td>
                 <td>1.03</td>
               </tr>
               <tr>
                 <td>August</td>
                 <td>Meditation</td>
-                <td>5.3325</td>
+                <td>5.33</td>
                 <td>0.81</td>
               </tr>
               <tr>
                 <td>January</td>
                 <td>Control</td>
-                <td>5.6037</td>
+                <td>5.60</td>
                 <td>0.90</td>
               </tr>
               <tr>
                 <td>January</td>
                 <td>Meditation</td>
-                <td>6.0707</td>
+                <td>5.97</td>
                 <td>1.07</td>
               </tr>
               <tr>
                 <td>June</td>
                 <td>Control</td>
-                <td>5.5916</td>
+                <td>5.59</td>
                 <td>1.18</td>
               </tr>
               <tr>
                 <td>June</td>
                 <td>Meditation</td>
-                <td>6.3453</td>
+                <td>6.35</td>
                 <td>0.93</td>
               </tr>
             </tbody>
@@ -283,46 +292,50 @@ pg.print_table(aov)
                 <th>F</th>
                 <th>p-unc</th>
                 <th>np2</th>
+                <th>eps</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>Group</td>
-                <td>5.4600</td>
+                <td>4.465</td>
                 <td>1</td>
                 <td>58</td>
-                <td>5.4600</td>
-                <td>5.0517</td>
-                <td>0.0284</td>
-                <td>0.0801</td>
+                <td>4.465</td>
+                <td>4.131</td>
+                <td>0.047</td>
+                <td>0.066</td>
+                <td>-</td>
               </tr>
               <tr>
                 <td>Time</td>
-                <td>9.8298</td>
+                <td>9.359</td>
                 <td>2</td>
                 <td>116</td>
-                <td>4.9149</td>
-                <td>5.1896</td>
-                <td> 0.0069</td>
-                <td>0.0821</td>
+                <td>4.679</td>
+                <td>4.940</td>
+                <td>0.008</td>
+                <td>0.078</td>
+                <td>0.998</td>
               </tr>
               <tr>
                 <td>Interaction</td>
-                <td>6.7952</td>
+                <td>6.539</td>
                 <td>2</td>
                 <td>116</td>
-                <td>3.3976</td>
-                <td><b>3.5875</b></td>
-                <td><b>0.0308</b></td>
-                <td>0.0583</td>
+                <td>3.269</td>
+                <td><b>3.452</b></td>
+                <td><b>0.035</b></td>
+                <td>0.056</td>
+                <td>-</td>
               </tr>
             </tbody>
           </table>
 
-          <p align="justify">We can see that there is indeed a significant interaction, F(2, 116)=3.59, p=.03. The effect size (partial eta-square) of this interaction is .058. <br><br>However, this does not tell us which specific contrast is <i>actually</i> significant.
+          <p align="justify">We can see that there is indeed a significant interaction, F(2, 116)=3.45, p=.035. The effect size (partial eta-square) of this interaction is .056. <br><br>However, this does not tell us which specific contrast is <i>actually</i> significant.
             For this reason, we need to perform post-hocs tests on the interaction. This can be done very easily using the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests" target="_blank">pairwise_ttests</a>            function:</p>
 
-          <pre><code class="python">posthocs = pg.pairwise_ttests(dv='Scores', within='Time', between='Group',
+          <pre><code class="python">posthocs = pg.pairwise_ttests(dv='Scores', within='Time', between='Group', subject='Subject',
 			      effects='interaction', data=df)
 pg.print_table(posthocs)
 </code></pre>
@@ -340,6 +353,7 @@ pg.print_table(posthocs)
                 <th>p-unc</th>
                 <th>Eff_size</th>
                 <th>Eff_type</th>
+                <th>BF10</th>
               </tr>
             </thead>
             <tbody>
@@ -347,32 +361,35 @@ pg.print_table(posthocs)
                 <td>August</td>
                 <td>Control</td>
                 <td>Meditation</td>
-                <td>0.7335</td>
-                <td>0.4662</td>
-                <td>0.1869</td>
+                <td>0.733</td>
+                <td>0.466</td>
+                <td>0.187</td>
                 <td>hedges</td>
+                <td>0.329</td>
               </tr>
               <tr>
                 <td>January</td>
                 <td>Control</td>
                 <td>Meditation</td>
-                <td>-1.8244</td>
-                <td>0.0732</td>
-                <td>-0.4649</td>
+                <td>-1.434</td>
+                <td>0.157</td>
+                <td>-0.365</td>
                 <td>hedges</td>
+                <td>0.619</td>
               </tr>
               <tr>
                 <td>June</td>
                 <td>Control</td>
                 <td>Meditation</td>
-                <td><b>-2.7443</b></td>
-                <td><b>0.0081</b></td>
-                <td><b>-0.6994</b></td>
+                <td><b>-2.744</b></td>
+                <td><b>0.008</b></td>
+                <td><b>-0.699</b></td>
                 <td>hedges</td>
+                <td>5.593</td>
               </tr>
             </tbody>
           </table>
-          <p align="justify">Our visual impression is therefore confirmed: there is a <b>significant increase in test scores in the meditator group 12 months after the beginning of the experiment</b> (T=-2.7, p-unc=.0081). The corrected effect size (<a href="http://www.statisticshowto.com/hedges-g/">Hedges g</a>)
+          <p align="justify">Our visual impression is therefore confirmed: there is a <b>significant increase in test scores in the meditator group 12 months after the beginning of the experiment</b> (T=-2.7, p-unc=.008, Bayes Factor = 5.593). The corrected effect size (<a href="http://www.statisticshowto.com/hedges-g/">Hedges g</a>)
             is approximately 0.70 and can therefore be considered, according to <a href="https://en.wikipedia.org/wiki/Cohen%27s_h#Interpretation">Cohen's rule of thumb</a>, as large.
 
             <ul class="actions" align="center">
@@ -388,9 +405,8 @@ pg.print_table(posthocs)
             <p align="justify">If you have a large number of groups and/or measurements, you might want to correct the p-values for multiple comparisons. This can be done very easily using the <em>padjust</em> argument of the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests"
                 target="_blank">pairwise_ttests</a> function:</p>
 
-            <pre><code class="python">posthocs = pg.pairwise_ttests(dv='Scores', within='Time', between='Group',
-			      effects='interaction', data=df, padjust='holm')
-pg.print_table(posthocs)
+            <pre><code class="python">pg.pairwise_ttests(dv='Scores', within='Time', between='Group', subject='Subject',
+                   effects='interaction', data=df, padjust='holm')
 </code></pre>
 
             <p align="justify"></p>
