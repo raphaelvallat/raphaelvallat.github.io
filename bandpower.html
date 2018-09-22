@@ -96,11 +96,11 @@
             <span class="image fit"><img src="images/tutorials/bandpower/brain_waves.png" alt="Brain waves"/></span>
 
             <p align="justify">This implies the decomposition of the EEG signal into frequency components, which is commonly achieved through <a href="https://en.wikipedia.org/wiki/Fourier_transform" target="_blank">Fourier transforms</a>. The almost invariably used algorithm
-              to compute the Fourier transform (and probably the most important signal processing algorithm) is the <a href="https://en.wikipedia.org/wiki/Fast_Fourier_transform" target="_blank">Fast Fourier Transform (FFT)</a>, which returns the amplitude
-              (or magnitude) and phase of each frequency component. In spectral analysis, it is then common to square the resulting amplitudes to obtain an estimate of the <a href="https://en.wikipedia.org/wiki/Spectral_density" target="_blank">power spectral density</a> (or power spectrum, or <b>periodogram</b>), expressed in Volts<sup>2</sup> per Hertz.</p>
+              to compute the Fourier transform (and probably the most important signal processing algorithm) is the <a href="https://en.wikipedia.org/wiki/Fast_Fourier_transform" target="_blank">Fast Fourier Transform (FFT)</a>, which returns, for each frequency bin, a complex number containing the amplitude
+              and the phase. In spectral analysis, it is then common to take the squared absolute magnitudes of the FFT to obtain an estimate of the <a href="https://en.wikipedia.org/wiki/Spectral_density" target="_blank">power spectral density</a> (or power spectrum, or <b>periodogram</b>), typically expressed in (micro)-Volts<sup>2</sup> per Hertz.</p>
 
               <ul class="feature-icons">
-                <li class="fa-book">If you did not understand a single word of the previous paragraph, I recommand checking out this <a href="https://betterexplained.com/articles/an-interactive-guide-to-the-fourier-transform/" target="_blank">blog post</a> or this <a href="https://www.youtube.com/watch?v=spUNpyF58BY" target="_blank">video</a> on the Fourier Transform before going further!</li>
+                <li class="fa-book">If the previous paragraph is completely obscure for you, I recommand checking out this <a href="https://betterexplained.com/articles/an-interactive-guide-to-the-fourier-transform/" target="_blank">blog post</a> or this <a href="https://www.youtube.com/watch?v=spUNpyF58BY" target="_blank">video</a> on the Fourier Transform before going further!</li>
               </ul>
 
               <p align="justify">While several type of analyses can be performed with power spectral density, I am going to focus here on a very simple one: the <b>average band power</b>. For instance, if you are looking at EEG sleep data and are interested in slow-wave
@@ -151,11 +151,11 @@ sns.despine()
 
               <p align="justify">Now let's say that you want to compute the average power of the Delta frequency band (0.5 - 4.5 Hz). To do that, we first need to compute an estimate of the power spectral density. The most widely-used method to do that is the <a href="https://en.wikipedia.org/wiki/Welch%27s_method"
                   target="_blank">Welch's periodogram</a>, which consists in averaging consecutive Fourier transform of small windows of the signal, with or without overlapping. The Welch's method improves the accuracy of the classic periodogram (i.e. just
-                squaring the amplitude of the FFT obtained on the whole signal). The reason is simple: the EEG data is time-varying, meaning that if you look at a 30 seconds sample of EEG data, it is very (very) unlikely that the signal will looks like a sum
-                of perfect and constant sines. Rather, the spectral content of the EEG changes over time, constantly modified by the neuronal activity at play under the scalp. Problem is, to return a true spectral estimate, a classic periodogram requires
+                squaring the absolute magnitudes of the FFT obtained on the whole signal). <br><br>The reason is simple: EEG data are always time-varying, meaning that if you look at a 30 seconds of EEG data, it is very (very) unlikely that the signal will looks like a perfct sum
+                of pure sines. Rather, the spectral content of the EEG changes over time, constantly modified by the neuronal activity at play under the scalp. Problem is, to return a true spectral estimate, a classic periodogram requires
                 the spectral content of the signal to be stationnary (i.e. time-unvarying) over the time period considered. Because it is never the case, the periodogram is generally biased and contains way too much variance (see the end of this tutorial).
                 By averaging the periodograms obtained over short segments of the windows, the Welch's method allows to drastically reduce this variance, at the cost of a loss in the frequency resolution. Indeed, the longer the signal is, the higher the
-                frequency resolution is (the spacing between points on the x-axis of the periodogram).
+                frequency resolution of the FFT is.
                 <br><br>In the example below, we are going to compute and plot a Welch's periodogram of our 30-seconds signal, by averaging over 4-seconds windows. We choose this 4 seconds limits to get at least two full cycles of the lowest frequency
                 of the delta band ((1 / 0.5 Hz) * 2 = 4 seconds).</p>
 
@@ -180,8 +180,8 @@ sns.despine()
               <span class="image fit"><img src="images/tutorials/bandpower/psd.png" alt="" /></span>
 
 
-              <p align="justify">The <code>freqs</code> vector contains the x-axis (frequency bins) and the <code>psd</code> vector contains the y-axis (power spectral density). The units of the power spectral density, when working with EEG data, is Volts-squared per Hz
-                (V^2/Hz).</p>
+              <p align="justify">The <code>freqs</code> vector contains the x-axis (frequency bins) and the <code>psd</code> vector contains the y-axis (power spectral density). The units of the power spectral density, when working with EEG data, is (micro)-Volts-squared per Hz
+                (uV^2/Hz).</p>
 
               <ul class="feature-icons">
                 <li class="fa-exclamation-triangle">Note that the maximum value of the x-axis is always half the sampling frequency, which corresponds to the <a href="https://en.wikipedia.org/wiki/Nyquist_frequency" target="_blank">Nyquist frequency</a>.</li>
@@ -255,7 +255,7 @@ print('Relative delta power: %.3f' % delta_rel_power)
               <h4>Generalization</h4>
 
               <p align="justify">The function below is a generalization of the above which can be used to easily get the average absolute or relative power in a specific frequency band. It is very similar to the Matlab <a href="https://www.mathworks.com/help/signal/ref/bandpower.html"
-                  target="_blank">bandpower</a> function, the two main differences being that it uses a Welch's periodogram instead of a classical periodogram, and parabola instead of rectangle to approximate the area.</p>
+                  target="_blank">bandpower</a> function, the two main differences being that it uses a Welch's periodogram instead of a classical periodogram, and parabola instead of rectangles to approximate the area.</p>
 
               <pre><code class="python">def bandpower(data, sf, band, window_sec=None, relative=False):
     """Compute the average power of the signal x in a specific frequency band.
@@ -347,10 +347,9 @@ db_rel = bandpower(data, sf, [0.5, 4], win_sec, True) / bandpower(data, sf, [12,
                 and Welch's periodograms, by combining the advantages of the two methods: high frequency resolution and low variance.
                 <br><br>To understand how it works, I really encourage you to read <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5343535/">this paper by Prerau et al. (2017)</a> that explains very well what is multitaper and how sleep research
                 and sleep medicine could benefit from it. Another source that was useful for me was the <a href="https://www.mathworks.com/examples/signal/mw/signal-ex41524780-multitaper-method" target="_blank">Matlab documentation on Multitaper spectral analyses</a>.
-                <br><br>In a nutshell, the multitaper method starts by filtering the original signal with a set of optimal bandpass filter, called Slepian sequences (or DPSS). The computation of these Slepian sequences requires heavy computation and for
-                this reason multitaper spectral estimation is typically much slower than a classic periodogram. This filtering is done by convoluting (i.e. element-wise multiplication) the original signal with the Slepian sequences. Second, a classic
-                periodogram is calculated for each of these new filtered (or "tapered") data. The periodogram is obtained by computing the Fourier Transform and then squaring the magnitude. The final spectrum is obtained by averaging over all the resulting
-                periodogram. The real strength of the multitaper method comes from the fact that the Slepian sequences are orthogonal to all other and therefore the filtered signals provide statistically independent estimates of the underlying spectrum.
+                <br><br>In a nutshell, the multitaper method starts by filtering the original signal with a set of optimal bandpass filter, called Slepian sequences (or DPSS). This filtering is done by convoluting the original signal with the Slepian sequences. Second, a classic
+                periodogram is calculated for each of these new filtered (or "tapered") data and the final spectrum is then obtained by averaging over all the resulting
+                periodogram. The real strength of the multitaper method comes from the fact that the Slepian sequences are orthogonal to all others and therefore the tapered signals provide statistically independent estimates of the underlying spectrum.
                 In other words, each filtered signal will highlight one specific aspect of the spectral content of the signal.</p>
 
 
@@ -550,12 +549,12 @@ plot_spectrum_methods(data, sf, 4, [0.5, 2], dB=True)
                 was about ~70ms. Imagine now having 6 hours of data sampled at 1000Hz, it would take about 3 seconds to compute the periodogram using Welch's method, but almost 10 minutes using the multitaper method!
                 <br><br>While the multitaper methods always provide a more robust spectral estimation, I think that it is important to understand that the spectral estimation is case-specific. For example, if you have clean data acquired on young healthy
                 individuals, there's a good chance that the multitaper spectral estimation will not differ that much from the Welch's estimate. Furthermore, the Welch's method is probably the most used spectral estimation technique to this day and is
-                quite intuitive to understand. By contrast, the multitaper is a relatively new method that is conceptually quite hard to grasp (notably the computation of the Slepian sequences).
+                quite intuitive to understand. By contrast, the multitaper is a relatively new method that is conceptually harder to grasp.
                 <p>
 
                   <h5>Multitaper spectrogram?</h5>
 
-                  <p align="justify">It is also possible to compute a spectrogram (time in the x-axis, spectral density on the y-axis) using the multitaper method. For instance, the <a href="http://visbrain.org/sleep" target="_blank">Sleep module of the Visbrain suite</a> (disclaimer: for which I am a co-founder!) include an option to display a classic (Fourier), wavelet, or multitaper spectrogram. As you can see on the figure below, the multitaper spectrogram is cleaner than the Fourier spectrogram.
+                  <p align="justify">It is also possible to compute a spectrogram (time in the x-axis, spectral density on the y-axis) using the multitaper method. For instance, the <a href="http://visbrain.org/sleep" target="_blank">Sleep module of the Visbrain suite</a> include an option to display a Fourier, wavelet, or multitaper spectrogram. As you can see on the figure below, the multitaper spectrogram is cleaner than the Fourier spectrogram.
                     <p>
 
                       <span class="image fit">
