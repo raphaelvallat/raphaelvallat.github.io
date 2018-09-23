@@ -120,8 +120,8 @@
        <pre><code class="python">import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-from scipy.signal import detrend, periodogram
-from mne.time_frequency import morlet, psd_array_welch
+from scipy.signal import detrend
+from mne.time_frequency import morlet
 
 # Load the data
 x = np.loadtxt('data_spindles_15s_200Hz.txt')
@@ -176,7 +176,8 @@ plt.ylabel('Amplitude [a.u.]')
 
        <p align="justify">Looks familiar, doesn't it? The two main parameters for the wavelet are the central spindles frequency and the number of oscillations. The spindles frequency is known to be strongly dependant of age (and other demographic factors) so it is important to adjust this parameter to your data.
          Alternatively, as we'll see later, you can simply compute a power spectrum of the signal and find the peak frequency within the 11 to 16 Hz range. The number of oscillations controls the trade-off between time and frequency resolution: the larger it is, the more specific the wavelet is to this specific central frequency. By contrast, the smaller this number is, the better the temporal resolution of our wavelet is. For spindles detection, default values of 7 or 12 are usually very good compromises.
-         <br><br>Now that we have our wavelet, let's convolve it (i.e slide it through) our signal, and then apply a threshold. For the sake of this tutorial, I chose a very naive and purely arbitrary 90% percentile threshold, i.e. spindles are the 10% higher values of our wavelet-convolved signal. For much longer signal and/or periods including other sleep stages, it might be a good idea to used a fixed rather than a percentile threshold.
+         <br><br>Now that we have our wavelet, let's convolve it (i.e slide it through) our signal, and then apply a threshold. To further increase sensitivity, we will square the wavelet-convolved signal (i.e. take the power) and then normalize it from 0 to 1. This last step is important to allow for a reproducible threshold (i.e. that is not dependant of the original data).
+          For the sake of this tutorial, we'll use a very simple and arbitrary fixed threshold of 0.25.
        </p>
 
        <pre><code class="python"># Convolve the wavelet and extract magnitude and phase
@@ -184,11 +185,15 @@ analytic = np.convolve(x, wlt, mode='same')
 magnitude = np.abs(analytic)
 phase = np.angle(analytic)
 
+# Square and normalize the magnitude from 0 to 1 (using the min and max)
+power = np.square(magnitude)
+norm_power = (power - power.min()) / (power.max() - power.min())
+
 # Define the threshold
-thresh = np.percentile(magnitude, q=90)
+thresh = 0.25
 
 # Find supra-threshold values
-supra_thresh = np.where(magnitude >= thresh)[0]
+supra_thresh = np.where(norm_power >= thresh)[0]
 
 # Create vector for plotting purposes
 val_spindles = np.nan * np.zeros(x.size)
@@ -202,16 +207,18 @@ ax1.set_xlim(0, times[-1])
 ax1.set_ylabel('Voltage [uV]')
 ax1.set_title('Cz EEG signal')
 
-ax2.plot(times, magnitude)
+ax2.plot(times, norm_power)
 ax2.set_xlabel('Time [sec]')
-ax2.set_ylabel('Magnitude')
-ax2.axhline(thresh, ls=':', color='indianred', label='90% threshold')
+ax2.set_ylabel('Normalized wavelet power')
+ax2.axhline(thresh, ls='--', color='indianred', label='Threshold')
+ax2.fill_between(times, norm_power, thresh, where = norm_power >= thresh,
+                 color='indianred', alpha=.8)
 plt.legend(loc='best')
 </code></pre>
 
       <span class="image fit"><img src="images/tutorials/spindles/supra_thresh.png" alt="Supra-threshold" /></span>
 
-      <p align="justify">Well, we can see that our simple wavelet convolution and arbitrary thresholding do an excellent job at identifying the two spindles in our signal! Again, rather than using a percentile threshold, one could have used a fixed threshold of 100 to obtain very similar results.
+      <p align="justify">Well, we can see that our simple wavelet convolution and arbitrary thresholding do an excellent job at identifying the two spindles in our signal!
       </p>
 
       <hr />
@@ -249,12 +256,12 @@ print(sp_params)
 
 <p align="justify">Which should return:</p>
 
-<blockquote>Duration (ms)  : [670., 820.]<br>
-            Frequency (Hz) : [12.79, 12.28]<br>
-            Amplitude (uV) : [83.27, 108.55]</blockquote>
+<blockquote>Duration (ms)  : [725., 870.]<br>
+            Frequency (Hz) : [12.79, 12.30]<br>
+            Amplitude (uV) : [85.87, 116.79]</blockquote>
 
       <p align="justify">Good news, our detected spindles are likely to be true spindles: their durations, amplitudes and frequencies are consistent with what we know about the typical morphology of spindles.
-        From that point, there are many ways to improve this simple detection. For instance, we know that according to the AASM definition spindles must last at least 0.5 seconds, so it would be easy to reject all the detected events that are, say, less than 0.4-0.5 seconds.
+        Using these values, there are many ways to improve this simple detection. For instance, we know that according to the AASM definition spindles must last at least 0.5 seconds, so it would be easy to reject all the detected events that are, say, less than 0.4-0.5 seconds.
         Likewise, we could apply thresholds for the frequency and the amplitude.</p>
 
 
@@ -264,7 +271,7 @@ print(sp_params)
 
         <pre><code class="python">import numpy as np
 
-def spindles_detect(x, sf, perc_thresh=90, wlt_params={'nc': 12, 'cf': 'auto'}):
+def spindles_detect(x, sf, thresh=0.25, wlt_params={'nc': 12, 'cf': 'auto'}):
     """Simple spindles detector based on Morlet wavelet.
 
     Parameters
@@ -273,8 +280,8 @@ def spindles_detect(x, sf, perc_thresh=90, wlt_params={'nc': 12, 'cf': 'auto'}):
         EEG signal
     sf : float
         Sampling frequency
-    perc_thresh : float
-        Percentile threshold (0 - 100)
+    thresh : float
+        Threshold (0 - 1)
     wlt_params : dict
         Morlet wavelet parameters ::
 
@@ -300,12 +307,15 @@ def spindles_detect(x, sf, perc_thresh=90, wlt_params={'nc': 12, 'cf': 'auto'}):
     # Compute the wavelet and convolve with data
     wlt = morlet(sf, [wlt_params['cf']], n_cycles=wlt_params['nc'])[0]
     analytic = np.convolve(x, wlt, mode='same')
-    magnitude = np.abs(analytic)
     phase = np.angle(analytic)
 
+    # Square and normalize the magnitude from 0 to 1 (using the min and max)
+    power = np.square(np.abs(analytic))
+    norm_power = (power - power.min()) / (power.max() - power.min())
+
     # Find supra-threshold values and indices
-    supra_thresh_bool = magnitude >= np.percentile(magnitude, q=perc_thresh)
-    supra_thresh_idx = np.where(supra_thresh_bool)[0]
+    supra_thresh_bool = norm_power >= thresh
+    supra_thresh_idx = np.where(norm_power >= thresh)[0]
 
     # Extract duration, frequency and amplitude of spindles
     sp = np.split(supra_thresh_idx, np.where(np.diff(supra_thresh_idx) != 1)[0] + 1)
@@ -325,7 +335,7 @@ def spindles_detect(x, sf, perc_thresh=90, wlt_params={'nc': 12, 'cf': 'auto'}):
 # Run the function
 x = np.loadtxt('data_spindles_15s_200Hz.txt')
 sf = 200
-spindles_detect(x, sf, perc_thresh=90)
+spindles_detect(x, sf, thresh=0.25)
 </code></pre>
 
     <p>Which should return:</p>
