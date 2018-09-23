@@ -176,7 +176,7 @@ plt.ylabel('Amplitude [a.u.]')
 
        <p align="justify">Looks familiar, doesn't it? The two main parameters for the wavelet are the central spindles frequency and the number of oscillations. The spindles frequency is known to be strongly dependant of age (and other demographic factors) so it is important to adjust this parameter to your data.
          Alternatively, as we'll see later, you can simply compute a power spectrum of the signal and find the peak frequency within the 11 to 16 Hz range. The number of oscillations controls the trade-off between time and frequency resolution: the larger it is, the more specific the wavelet is to this specific central frequency. By contrast, the smaller this number is, the better the temporal resolution of our wavelet is. For spindles detection, default values of 7 or 12 are usually very good compromises.
-         <br><br>Now that we have our wavelet, let's convolve it (i.e slide it through) our signal, and then apply a threshold. For the sake of this tutorial, I chose a very naive and purely arbitrary 90% percentile threshold, i.e. spindles are the 10% higher values of our wavelet-convolved signal.
+         <br><br>Now that we have our wavelet, let's convolve it (i.e slide it through) our signal, and then apply a threshold. For the sake of this tutorial, I chose a very naive and purely arbitrary 90% percentile threshold, i.e. spindles are the 10% higher values of our wavelet-convolved signal. For much longer signal and/or periods including other sleep stages, it might be a good idea to used a fixed rather than a percentile threshold.
        </p>
 
        <pre><code class="python"># Convolve the wavelet and extract magnitude and phase
@@ -211,7 +211,7 @@ plt.legend(loc='best')
 
       <span class="image fit"><img src="images/tutorials/spindles/supra_thresh.png" alt="Supra-threshold" /></span>
 
-      <p align="justify">Well, we can see that our simple wavelet convolution and arbitrary thresholding do an excellent job at identifying the two spindles in our signal!
+      <p align="justify">Well, we can see that our simple wavelet convolution and arbitrary thresholding do an excellent job at identifying the two spindles in our signal! Again, rather than using a percentile threshold, one could have used a fixed threshold of 100 to obtain very similar results.
       </p>
 
       <hr />
