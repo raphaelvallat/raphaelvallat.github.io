@@ -1656,6 +1656,7 @@
 
 	blockquote {
 		background: #fcfcfc;
+		font-size: 0.90em;
 		border-left: solid 8px #e4e4e4;
 		font-style: italic;
 		margin: 0 0 2.25em 0;
