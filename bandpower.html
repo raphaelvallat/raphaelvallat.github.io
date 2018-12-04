@@ -196,22 +196,19 @@ sns.despine()
 
               <h4>Defining the delta band</h4>
 
-              <p align="justify">Now, before computing the average delta bandpower, we need to find the frequency bins that intersect our delta band (defined by the range 0.5 to 4 Hz).</p>
+              <p align="justify">Now, before computing the average delta bandpower, we need to find the frequency bins that intersect our delta band (i.e. 0.5 <= freqs < 4).</p>
 
               <pre><code class="python"># Define delta lower and upper limits
 low, high = 0.5, 4
-idx_min = np.argmax(freqs > low) - 1
-idx_max = np.argmax(freqs > high) - 1
-idx_delta = np.zeros(dtype=bool, shape=freqs.shape)
-idx_delta[idx_min:idx_max] = True
+
+# Find closest values in freqs vector
+idx_delta = np.logical_and(freqs >= low, freqs < high)
 
 # Plot the power spectral density and fill the area comprising the delta band
-plt.figure(figsize=(8, 4))
+plt.figure(figsize=(7, 4))
 plt.plot(freqs, psd, lw=2, color='k')
-# plt.fill_between does not count the first and last True values of idx_delta
-idx_fill = idx_delta.copy()
-idx_fill[idx_min:idx_max+1]= True
-plt.fill_between(freqs, psd, where=idx_fill)
+plt.fill_between(freqs, psd, where=idx_delta, color='skyblue',
+                  linestyle=':', linewidth=1.5, edgecolor='grey')
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Power spectral density (V^2 / Hz)')
 plt.xlim([0, 10])
@@ -233,7 +230,7 @@ sns.despine()
 
               <pre><code class="python"># Compute the absolute power by approximating the area under the curve
 from scipy.integrate import simps
-delta_power = simps(psd[idx_delta], freqs[idx_delta])
+delta_power = simps(psd[idx_delta], freqs[idx_delta]) # Same as: (freqs[1] - freqs[0]) * simps(psd[idx_delta])
 print('Absolute delta power: %.3f V^2' % delta_power)
 </code></pre>
 
@@ -311,10 +308,7 @@ print('Relative delta power: %.3f' % delta_rel_power)
     freqs, psd = welch(data, sf, nperseg=nperseg, scaling='density')
 
     # Find closest indices of band in frequency vector
-    idx_min = np.argmax(freqs > low) - 1
-    idx_max = np.argmax(freqs > high) - 1
-    idx_band = np.zeros(dtype=bool, shape=freqs.shape)
-    idx_band[idx_min:idx_max] = True
+    idx_band = np.logical_and(freqs >= low, freqs < high)
 
     # Integral approximation of the spectrum using Simpson's rule.
     bp = simps(psd[idx_band], freqs[idx_band])
@@ -406,9 +400,6 @@ db_rel = bandpower(data, sf, [0.5, 4], win_sec, True) / bandpower(data, sf, [12,
   if band.size != 2:
       raise ValueError("You must specify the lower and upper frequencies of the band.")
 
-  if low > high:
-      low, high = high, low
-
   # Compute the modified periodogram (Welch)
   if method == 'welch':
       if window_sec is not None:
@@ -422,10 +413,7 @@ db_rel = bandpower(data, sf, [0.5, 4], win_sec, True) / bandpower(data, sf, [12,
       psd, freqs = psd_array_multitaper(data, sf, adaptive=True, normalization='full')
 
   # Find index of band in frequency vector
-  idx_min = np.argmax(freqs > low) - 1
-  idx_max = np.argmax(freqs > high) - 1
-  idx_band = np.zeros(dtype=bool, shape=freqs.shape)
-  idx_band[idx_min:idx_max] = True
+  idx_band = np.logical_and(freqs >= low, freqs < high)
 
   # Integral approximation of the spectrum using parabola (Simpson's rule)
   bp = simps(psd[idx_band], freqs[idx_band])
