@@ -226,7 +226,7 @@ sns.despine()
 
               <p align="justify">The absolute delta power is equal to the blue area of the previous plot. As there is no closed-form formula to integrate this area, we need to approximate it. This is commonly achieved using the <a href="https://en.wikipedia.org/wiki/Simpson%27s_rule"
                   target="_blank">composite Simpson's rule</a>. The idea behind it is actually very simple: we decompose this area into several parabola and then sum the area of these parabola. Note that this could also be done using trapezoid (trapezoid
-                rule) or rectangle (as in the Matlab <a href="https://www.mathworks.com/help/signal/ref/bandpower.html" target="_blank">bandpower</a> function), but parabola typically give better estimates.</p>
+                rule) or rectangle (as in the Matlab <a href="https://www.mathworks.com/help/signal/ref/bandpower.html" target="_blank">bandpower</a> function), but parabola typically give <a href="https://stackoverflow.com/a/44915647/10581531" target="_blank">better estimates</a>.</p>
 
               <pre><code class="python"># Compute the absolute power by approximating the area under the curve
 from scipy.integrate import simps
