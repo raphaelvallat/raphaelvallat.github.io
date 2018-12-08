@@ -164,6 +164,11 @@ sns.despine()
                 <br><br>In the example below, we are going to compute and plot a Welch's periodogram of our 30-seconds signal, by averaging over 4-seconds windows. We choose this 4 seconds limits to get at least two full cycles of the lowest frequency
                 of the delta band ((1 / 0.5 Hz) * 2 = 4 seconds).</p>
 
+                <ul class="feature-icons">
+                  <li class="fa-exclamation-triangle">When using the Welch method, be aware that the window length directly affects the frequency resolution of the PSD. In this example, we are using a window of 4 seconds meaning that the frequency resolution of our PSD will be 4 bins per Hertz (i.e. 0.25 Hz step). This remains true regardless of the sampling frequency of the signal.
+                    Longer window gives better resolution, but at the cost of an increased variance (and thus reduced specifity for high frequencies).</li>
+                </ul>
+
               <pre><code class="python">from scipy import signal
 
 # Define window length (4 seconds)
@@ -196,13 +201,13 @@ sns.despine()
 
               <h4>Defining the delta band</h4>
 
-              <p align="justify">Now, before computing the average delta bandpower, we need to find the frequency bins that intersect our delta band (i.e. 0.5 <= freqs < 4).</p>
+              <p align="justify">Now, before computing the average delta bandpower, we need to find the frequency bins that intersect our delta band (i.e. 0.5 <= freqs <= 4).</p>
 
               <pre><code class="python"># Define delta lower and upper limits
 low, high = 0.5, 4
 
 # Find closest values in freqs vector
-idx_delta = np.logical_and(freqs >= low, freqs < high)
+idx_delta = np.logical_and(freqs >= low, freqs <= high)
 
 # Plot the power spectral density and fill the area comprising the delta band
 plt.figure(figsize=(7, 4))
@@ -234,7 +239,7 @@ delta_power = simps(psd[idx_delta], freqs[idx_delta]) # Same as: (freqs[1] - fre
 print('Absolute delta power: %.3f V^2' % delta_power)
 </code></pre>
 
-              <blockquote><b>Absolute &delta; power:</b> 315.253 volts-squared</blockquote>
+              <blockquote><b>Absolute &delta; power:</b> 321.064 volts-squared</blockquote>
 
               <h5>Relative power</h5>
 
@@ -248,9 +253,9 @@ delta_rel_power = delta_power / total_power
 print('Relative delta power: %.3f' % delta_rel_power)
 </code></pre>
 
-              <blockquote><b>Relative &delta; power:</b> 0.774</blockquote>
+              <blockquote><b>Relative &delta; power:</b> 0.787</blockquote>
 
-              <p align="justify">In other words, 77.4% of the total power of the signal is contained in the delta frequency band.</p>
+              <p align="justify">In other words, 78.7% of the total power of the signal is contained in the delta frequency band.</p>
 
               <hr />
 
@@ -308,7 +313,7 @@ print('Relative delta power: %.3f' % delta_rel_power)
     freqs, psd = welch(data, sf, nperseg=nperseg, scaling='density')
 
     # Find closest indices of band in frequency vector
-    idx_band = np.logical_and(freqs >= low, freqs < high)
+    idx_band = np.logical_and(freqs >= low, freqs <= high)
 
     # Integral approximation of the spectrum using Simpson's rule.
     bp = simps(psd[idx_band], freqs[idx_band])
@@ -335,8 +340,8 @@ db = bandpower(data, sf, [0.5, 4], win_sec) / bandpower(data, sf, [12, 30], win_
 db_rel = bandpower(data, sf, [0.5, 4], win_sec, True) / bandpower(data, sf, [12, 30], win_sec, True)
 </code></pre>
 
-              <blockquote><b>&delta;/&beta; ratio (absolute)</b>: 41.501<br>
-                <b>&delta;/&beta; ratio (relative)</b>: 41.501</blockquote>
+              <blockquote><b>&delta;/&beta; ratio (absolute)</b>: 42.214<br>
+                <b>&delta;/&beta; ratio (relative)</b>: 42.214</blockquote>
 
               <hr />
 
@@ -413,7 +418,7 @@ db_rel = bandpower(data, sf, [0.5, 4], win_sec, True) / bandpower(data, sf, [12,
       psd, freqs = psd_array_multitaper(data, sf, adaptive=True, normalization='full')
 
   # Find index of band in frequency vector
-  idx_band = np.logical_and(freqs >= low, freqs < high)
+  idx_band = np.logical_and(freqs >= low, freqs <= high)
 
   # Integral approximation of the spectrum using parabola (Simpson's rule)
   bp = simps(psd[idx_band], freqs[idx_band])
@@ -442,10 +447,10 @@ print('Delta/beta ratio (relative): %.3f' % db_rel)
 </code></pre>
 
               <blockquote>
-                <b>Absolute &delta; power</b>: 311.198<br>
-                <b>Relative &delta; power</b>: 0.789<br>
-                <b>&delta;/&beta; ratio (absolute)</b>: 41.020<br>
-                <b>&delta;/&beta; ratio (relative)</b>: 41.020
+                <b>Absolute &delta; power</b>: 311.559<br>
+                <b>Relative &delta; power</b>: 0.790<br>
+                <b>&delta;/&beta; ratio (absolute)</b>: 41.225<br>
+                <b>&delta;/&beta; ratio (relative)</b>: 41.225
               </blockquote>
 
               <p align="justify">The results are very close to the one obtained using Welch's method. This should remain true as long as your data are not too noisy. However, if you are working with noisy data, the multitaper method will always provide a much more
