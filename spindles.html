@@ -232,8 +232,10 @@ plt.legend(loc='best')
       <h4>Extract spindles parameters</h4>
 
       <p align="justify">Now that we have detected our spindles, let's compute some relevant metrics, such as their durations, amplitudes and frequencies. The duration can be simply extracted by finding the start and end of each spindles. The amplitude can be extracted by finding the peak-to-peak amplitude of the detrended original signal.
+        <br><br>
         The frequency is slightly more complicated (and there are many ways one could compute it). The approach I chose here is to take the median of the instantaneous frequencies of each data point within the detected spindle.
         The instantanenous frequency can be extracted using the first-derivative of the phase of the analytic signal (see <a href="https://www.mathworks.com/help/signal/ref/instfreq.html#d120e88845" target="_blank">here</a> for more details).
+        Another, perhaps simpler, approach could be to compute the <a href="bandpower.html" target="_blank">power spectral density</a> of the spindles and then take the peak frequency within the 11 - 16 Hz range.
       </p>
 
       <pre><code class="python"># Extract start and end of each spindles
@@ -321,7 +323,7 @@ def spindles_detect(x, sf, thresh=0.25, wlt_params={'nc': 12, 'cf': 'auto'}):
 
     # Find supra-threshold values and indices
     supra_thresh_bool = norm_power >= thresh
-    supra_thresh_idx = np.where(norm_power >= thresh)[0]
+    supra_thresh_idx = np.where(supra_thresh_bool)[0]
 
     # Extract duration, frequency and amplitude of spindles
     sp = np.split(supra_thresh_idx, np.where(np.diff(supra_thresh_idx) != 1)[0] + 1)
@@ -349,8 +351,13 @@ spindles_detect(x, sf, thresh=0.25)
     <span class="image fit"><img src="images/tutorials/spindles/wrapper_output.PNG" alt="Wrapper output" /></span>
 
 
-    <p align="justify">Note that we are automatically finding the peak central frequency using a multitaper power spectral density estimate. This has the advantage of being very accurate but can be extremely slow if you have several hours of data. In that case, I would recommand using the <i>psd_array_welch</i> function of MNE with a window of 2-4 seconds or choosing a priori a central frequency (e.g. 12 or 13 Hz).
-      <br><br>That's it! I hope that you enjoyed reading this tutorial as much as I enjoyed writing it.
+    <p align="justify">Note that we are automatically finding the peak central frequency using a multitaper power spectral density estimate.
+      This has the advantage of being very accurate but can be extremely slow if you have several hours of data.
+      In that case, I would recommand using the
+      <a href="https://mne-tools.github.io/stable/generated/mne.time_frequency.psd_array_welch.html" target="_blank">psd_array_welch</a>
+      function of MNE with a window of 4-10 seconds,
+      or even choosing <i>a priori</i> a central frequency, like we did earlier in this tutorial.
+      <br><br>
        Please feel free to contact me if you see any bugs, have any questions and/or ideas for improvement!</p>
 
 

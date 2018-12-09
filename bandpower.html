@@ -214,7 +214,7 @@ plt.xlabel('Frequency (Hz)')
 plt.ylabel('Power spectral density (V^2 / Hz)')
 plt.ylim([0, psd.max() * 1.1])
 plt.title("Welch's periodogram")
-plt.xlim([0, 20])
+plt.xlim([0, freqs.max()])
 sns.despine()
 </code></pre>
 
@@ -273,10 +273,10 @@ freq_res = freqs[1] - freqs[0]  # = 1 / 4 = 0.25
 
 # Compute the absolute power by approximating the area under the curve
 delta_power = simps(psd[idx_delta], dx=freq_res)
-print('Absolute delta power: %.3f V^2' % delta_power)
+print('Absolute delta power: %.3f uV^2' % delta_power)
 </code></pre>
 
-                    <blockquote><b>Absolute &delta; power:</b> 321.064 volts-squared</blockquote>
+                    <blockquote><b>Absolute delta power:</b> 321.064 uV^2</blockquote>
 
                     <h5>Relative power</h5>
 
@@ -291,7 +291,7 @@ delta_rel_power = delta_power / total_power
 print('Relative delta power: %.3f' % delta_rel_power)
 </code></pre>
 
-                    <blockquote><b>Relative &delta; power:</b> 0.787</blockquote>
+                    <blockquote><b>Relative delta power:</b> 0.787</blockquote>
 
                     <p align="justify">In other words, 78.7% of the total power of the signal is contained in the delta frequency band.</p>
 
@@ -369,10 +369,13 @@ db = bandpower(data, sf, [0.5, 4], win_sec) / bandpower(data, sf, [12, 30], win_
 
 # Delta/beta ratio based on the relative power
 db_rel = bandpower(data, sf, [0.5, 4], win_sec, True) / bandpower(data, sf, [12, 30], win_sec, True)
+
+print('Delta/beta ratio (absolute): %.3f' % db)
+print('Delta/beta ratio (relative): %.3f' % db_rel)
 </code></pre>
 
-                    <blockquote><b>&delta;/&beta; ratio (absolute)</b>: 42.214<br>
-                      <b>&delta;/&beta; ratio (relative)</b>: 42.214</blockquote>
+                    <blockquote><b>Delta/beta ratio (absolute)</b>: 42.214<br>
+                      <b>Delta/beta ratio (relative)</b>: 42.214</blockquote>
 
                     <hr />
 
@@ -406,64 +409,64 @@ db_rel = bandpower(data, sf, [0.5, 4], win_sec, True) / bandpower(data, sf, [12,
                       previously to add the multitaper method.</p>
 
                     <pre><code class="python">def bandpower(data, sf, band, method='welch', window_sec=None, relative=False):
-  """Compute the average power of the signal x in a specific frequency band.
+    """Compute the average power of the signal x in a specific frequency band.
 
-  Requires MNE-Python >= 0.14.
+    Requires MNE-Python >= 0.14.
 
-  Parameters
-  ----------
-  data : 1d-array
+    Parameters
+    ----------
+    data : 1d-array
       Input signal in the time-domain.
-  sf : float
+    sf : float
       Sampling frequency of the data.
-  band : list
+    band : list
       Lower and upper frequencies of the band of interest.
-  method : string
+    method : string
       Periodogram method: 'welch' or 'multitaper'
-  window_sec : float
+    window_sec : float
       Length of each window in seconds. Useful only if method == 'welch'.
       If None, window_sec = (1 / min(band)) * 2.
-  relative : boolean
+    relative : boolean
       If True, return the relative power (= divided by the total power of the signal).
       If False (default), return the absolute power.
 
-  Return
-  ------
-  bp : float
+    Return
+    ------
+    bp : float
       Absolute or relative band power.
-  """
-  from scipy.signal import welch
-  from scipy.integrate import simps
-  from mne.time_frequency import psd_array_multitaper
+    """
+    from scipy.signal import welch
+    from scipy.integrate import simps
+    from mne.time_frequency import psd_array_multitaper
 
-  band = np.asarray(band)
-  low, high = band
+    band = np.asarray(band)
+    low, high = band
 
-  # Compute the modified periodogram (Welch)
-  if method == 'welch':
-      if window_sec is not None:
-          nperseg = window_sec * sf
-      else:
-          nperseg = (2 / low) * sf
+    # Compute the modified periodogram (Welch)
+    if method == 'welch':
+        if window_sec is not None:
+            nperseg = window_sec * sf
+        else:
+            nperseg = (2 / low) * sf
 
-      freqs, psd = welch(data, sf, nperseg=nperseg)
+        freqs, psd = welch(data, sf, nperseg=nperseg)
 
-  elif method == 'multitaper':
-      psd, freqs = psd_array_multitaper(data, sf, adaptive=True, normalization='full')
+    elif method == 'multitaper':
+        psd, freqs = psd_array_multitaper(data, sf, adaptive=True,
+                                          normalization='full', verbose=0)
 
-  # Frequency resolution
-  freq_res = freqs[1] - freqs[0]
+    # Frequency resolution
+    freq_res = freqs[1] - freqs[0]
 
-  # Find index of band in frequency vector
-  idx_band = np.logical_and(freqs >= low, freqs <= high)
+    # Find index of band in frequency vector
+    idx_band = np.logical_and(freqs >= low, freqs <= high)
 
-  # Integral approximation of the spectrum using parabola (Simpson's rule)
-  bp = simps(psd[idx_band], dx=freq_res)
+    # Integral approximation of the spectrum using parabola (Simpson's rule)
+    bp = simps(psd[idx_band], dx=freq_res)
 
-  if relative:
-      bp /= simps(psd, dx=freq_res)
-  return bp
-</code></pre>
+    if relative:
+        bp /= simps(psd, dx=freq_res)
+    return bp</code></pre>
 
                     <p align="justify">Let's try our new function with the code below. One advantage of the Multitaper method compared to the Welch's method is that we do not need to specify a window duration as it will basically compute the
                       periodogram on the whole signal. Since we are using the full length of the signal, the frequency resolution of the multitaper estimate will be 1 / 30 = 0.033 Hz.</p>
@@ -485,10 +488,10 @@ print('Delta/beta ratio (relative): %.3f' % db_rel)
 </code></pre>
 
                     <blockquote>
-                      <b>Absolute &delta; power</b>: 311.559<br>
-                      <b>Relative &delta; power</b>: 0.790<br>
-                      <b>&delta;/&beta; ratio (absolute)</b>: 41.225<br>
-                      <b>&delta;/&beta; ratio (relative)</b>: 41.225
+                      <b>Absolute delta power</b>: 311.559<br>
+                      <b>Relative delta power</b>: 0.790<br>
+                      <b>Delta/beta ratio (absolute)</b>: 41.225<br>
+                      <b>Delta/beta ratio (relative)</b>: 41.225
                     </blockquote>
 
                     <p align="justify">The results are very close to the one obtained using Welch's method. This should remain true as long as your data are not too noisy. However, if you are working with noisy data, the multitaper method will
@@ -520,7 +523,8 @@ print('Delta/beta ratio (relative): %.3f' % db_rel)
     # Compute the PSD
     freqs, psd = periodogram(data, sf)
     freqs_welch, psd_welch = welch(data, sf, nperseg=window_sec*sf)
-    psd_mt, freqs_mt = psd_array_multitaper(data, sf, adaptive=True, normalization='full')
+    psd_mt, freqs_mt = psd_array_multitaper(data, sf, adaptive=True,
+                                            normalization='full', verbose=0)
     sharey = False
 
     # Optional: convert power to decibels (dB = 10 * log10(power))
@@ -547,7 +551,7 @@ print('Delta/beta ratio (relative): %.3f' % db_rel)
     if not dB:
         ax1.set_ylabel('Power spectral density (V^2/Hz)')
     else:
-        ax1.set_ylabel('Decibels (dB)')
+        ax1.set_ylabel('Decibels (dB / Hz)')
     ax1.set_title('Periodogram')
     ax2.set_title('Welch')
     ax3.set_title('Multitaper')
@@ -579,13 +583,14 @@ plot_spectrum_methods(data, sf, 4, [0.5, 2], dB=True)
 </code></pre>
 
                     <blockquote>
-                      345 µs ± 8.53 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)<br> 78.9 ms ± 2.82 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+                      348 µs ± 18.3 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+                      <br>108 ms ± 2.38 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
                     </blockquote>
 
-                    <p align="justify">The multitaper is more computationally intensive than other methods. In the example above, the multitaper method was about 200 times slower than the Welch's method. Using 30-sec of data sampled at 100Hz, the
-                      difference in the time of execution
-                      was about ~70ms. Imagine now having 6 hours of data sampled at 1000Hz, it would take about 3 seconds to compute the periodogram using Welch's method, but almost 10 minutes using the multitaper method!
-                      <br><br>Although the multitaper methods always provide a more robust spectral estimation, I think that choosing which technique one should use depends on the data at hands. For example, if you have clean data acquired on
+                    <p align="justify">The multitaper is more computationally intensive than other methods. In the example above, the multitaper method was about 300 times slower than the Welch's method. Using 30-sec of data sampled at 100 Hz, the
+                      difference in the time of execution was about ~100ms. Now, imagine that you have several hours of data and several channels sampled at 1000 Hz; what was barely perceptible on our 30-sec data could turn into a difference of
+                      several hours (e.g. 1 min for Welch, ~5 hours for the multitaper). This is definitely something that you may want to consider when deciding which method to use.
+                      <br><br>Second, although the multitaper methods always provide a more robust spectral estimation, I think that choosing which technique one should use depends on the data at hands. For example, if you have clean data acquired on
                       young healthy individuals, there's a good chance that the multitaper spectral estimation will not differ that much from the Welch's estimate. Furthermore, the Welch's method is probably the most used spectral estimation technique to this day
                       and is quite intuitive to understand. By contrast, the multitaper is a relatively new method that is conceptually harder to grasp.
                       <p>
