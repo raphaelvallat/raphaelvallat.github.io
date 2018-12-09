@@ -11,7 +11,7 @@
   <meta charset="utf-8" />
   <meta name="description" content="Raphael Vallat, PhD" />
   <meta name="author" content="Raphael Vallat, PhD" />
-  <meta name="keywords" content="Raphael Vallat, raphaelvallat, Lyon Neuroscience Research Center, DYCOG, Lyon Neuroscience, Sleep research, Dream research" />
+  <meta name="keywords" content="Raphael Vallat, raphaelvallat, bandpower, eeg, EEG, Fourier, multitaper, Welch, signal processing, spectral, power spectral density" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
   <link rel="stylesheet" href="assets/css/main.css" />
@@ -29,6 +29,7 @@
   <!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-118198513-1"></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
   <script>
     window.dataLayer = window.dataLayer || [];
 
@@ -86,51 +87,65 @@
         </header>
 
         <p align="justify">Welcome to this first tutorial on EEG signal processing in Python!
-          <br><br>We are going to see how to compute the <b>average power of a signal in a specific frequency range</b>, using both <b>Welch and the multitaper spectral estimation methods</b>. This tutorial is mainly geared for neuroscientists / sleep
+          <br><br>We are going to see how to compute the <b>average power of a signal in a specific frequency range</b>, using both <b>Welch and the multitaper spectral estimation methods</b>. This tutorial is mainly geared for neuroscientists /
+          sleep
           researchers with some basic knowledge of EEG signal processing.</p>
 
         <hr />
 
         <h4>Foreword</h4>
 
-        <p align="justify">One of the most widely used method to analyze EEG data is to decompose the signal into functionally distinct frequency bands, such as <a href="https://en.wikipedia.org/wiki/Delta_wave" target="_blank">delta</a> (0.5–4 Hz), <a href="https://en.wikipedia.org/wiki/Theta_wave"
-            target="_blank">theta</a> (4–7 Hz), <a href="https://en.wikipedia.org/wiki/Alpha_wave" target="_blank">alpha</a> (8–12 Hz), <a href="https://en.wikipedia.org/wiki/Beta_wave" target="_blank">beta</a> (12–30 Hz), and <a href="https://en.wikipedia.org/wiki/Gamma_wave"
-            target="_blank">gamma</a> (30–100 Hz).
+        <p align="justify">One of the most widely used method to analyze EEG data is to decompose the signal into functionally distinct frequency bands, such as <a href="https://en.wikipedia.org/wiki/Delta_wave" target="_blank">delta</a> (0.5–4 Hz),
+          <a href="https://en.wikipedia.org/wiki/Theta_wave" target="_blank">theta</a> (4–8 Hz), <a href="https://en.wikipedia.org/wiki/Alpha_wave" target="_blank">alpha</a> (8–12 Hz), <a href="https://en.wikipedia.org/wiki/Beta_wave" target="_blank">beta</a>
+          (12–30 Hz), and <a href="https://en.wikipedia.org/wiki/Gamma_wave" target="_blank">gamma</a> (30–100 Hz).
           <p>
 
-            <span class="image fit"><img src="images/tutorials/bandpower/brain_waves.png" alt="Brain waves"/></span>
+            <span class="image fit"><img src="images/tutorials/bandpower/brain_waves.png" alt="Brain waves" /></span>
 
-            <p align="justify">This implies the decomposition of the EEG signal into frequency components, which is commonly achieved through <a href="https://en.wikipedia.org/wiki/Fourier_transform" target="_blank">Fourier transforms</a>. The almost invariably used algorithm
-              to compute the Fourier transform (and probably the most important signal processing algorithm) is the <a href="https://en.wikipedia.org/wiki/Fast_Fourier_transform" target="_blank">Fast Fourier Transform (FFT)</a>, which returns, for each frequency bin, a complex number containing the amplitude
-              and the phase. In spectral analysis, it is then common to take the squared absolute magnitudes of the FFT to obtain an estimate of the <a href="https://en.wikipedia.org/wiki/Spectral_density" target="_blank">power spectral density</a> (or power spectrum, or <b>periodogram</b>), typically expressed in (micro)-Volts<sup>2</sup> per Hertz.</p>
+            <p align="justify">This implies the decomposition of the EEG signal into frequency components, which is commonly achieved through <a href="https://en.wikipedia.org/wiki/Fourier_transform" target="_blank">Fourier transforms</a>. The
+              almost invariably used algorithm
+              to compute the Fourier transform (and arguably the most important signal processing algorithm) is the <a href="https://en.wikipedia.org/wiki/Fast_Fourier_transform" target="_blank">Fast Fourier Transform (FFT)</a>, which returns, for
+              each frequency bin, a complex number from which one can then easily extract the amplitude and phase of the signal at that specific frequency. In spectral analysis, it is then common to take the magnitude-squared of the FFT to obtain an
+              estimate of the <a href="https://en.wikipedia.org/wiki/Spectral_density" target="_blank">power spectral density</a> (or power spectrum, or <b>periodogram</b>), expressed in (micro)-Volts<sup>2</sup> per Hertz in the case of EEG data.</p>
 
-              <ul class="feature-icons">
-                <li class="fa-book">If the previous paragraph is completely obscure for you, I recommand checking out this <a href="https://betterexplained.com/articles/an-interactive-guide-to-the-fourier-transform/" target="_blank">blog post</a> or this <a href="https://www.youtube.com/watch?v=spUNpyF58BY" target="_blank">video</a> on the Fourier Transform before going further!</li>
-              </ul>
+            <ul class="feature-icons">
+              <li class="fa-book">If the previous paragraph is completely obscure for you, I recommand checking out this <a href="https://betterexplained.com/articles/an-interactive-guide-to-the-fourier-transform/" target="_blank">blog post</a> or
+                this <a href="https://www.youtube.com/watch?v=spUNpyF58BY" target="_blank">video</a> on the Fourier Transform before going further!</li>
+            </ul>
 
-              <p align="justify">While several type of analyses can be performed with power spectral density, I am going to focus here on a very simple one: the <b>average band power</b>. For instance, if you are looking at EEG sleep data and are interested in slow-wave
-                sleep (N3 sleep), which are characterized by high delta activity, you might want to know <i>"what is the average spectral power of the delta frequency band during slow-wave sleep?"</i>.
-                <br><br>Typically, higher delta values indicate a higher amount of slow-waves and are associated with increased subjective sleep quality (sleep is perceived as more "refreshing"). Using that simple metric, it then becomes easy to compare
-                objective sleep quality between groups (e.g. insomniacs versus control, old vs young...) or within individuals.</p>
+            <p align="justify">Although a myriad of analyses can be performed from the power spectral density, I am going to focus here on a very simple one: the <b>average band power</b>, which consists in computing a single number that summarizes
+              the contribution of the given frequency band to the overall power of the signal. This could be particularly useful in a machine-learning approach, when often you will want to extract some keys features from your data (and have a single
+              number that could summarize a particular aspect of your data).
+              <br><br>The average bandpower is also a very relevant metric for sleep research because it allows to differentiate between the different sleep stages. For instance, <a href="https://en.wikipedia.org/wiki/Slow-wave_sleep"
+                target-"_blank">deep sleep</a> is characterized by its predominance of slow-waves with a frequency range comprised between 0.5 to 4 Hz (i.e. delta band), which reflects a synchronized brain activity. Conversely, wakefulness is
+              characterized by very little delta activity and much more higher-frequencies activity. Therefore, if you were to compute the delta bandpower for both deep sleep and wakefulness, the former would be very high and the latter very low.
+              See for yourself below:
+            </p>
 
-              <hr />
+            <span class="image fit">
+              <img src="images/tutorials/bandpower/stage.png" alt="Sleep stage" />
+              <figcaption>Typical brain (Fz and Cz), ocular (EOG) and muscular (EMG) activity across sleep and wakefulness. Each box represents 10 seconds of data from the same person. Notice how deep sleep (N3) is dominated by high-amplitude and
+                slow-frequency oscillations, while wakefulness is dominated by low-amplitude and high-frequency oscillations.</figcaption>
+            </span>
 
-              <h4>Data loading</h4>
+            <hr />
 
-              <p align="justify">For the sake of this tutorial, please find below a 30-seconds extract of real slow-wave sleep from one young individual. The sampling frequency is 100 Hz and the channel is F3.</p>
+            <h4>Data loading</h4>
 
-              <ul class="actions" align="center">
-                <li><a href="images/tutorials/bandpower/data.txt" class="button special icon fa-download" download>Download the raw EEG data (.txt, ~200 Ko)</a></li>
-              </ul>
+            <p align="justify">For the sake of this tutorial, please find below a 30-seconds extract of real slow-wave sleep from one young individual. The sampling frequency is 100 Hz and the channel is F3.</p>
 
-              <p align="justify">Time to open your favorite Python editor! Loading the data is fairly easy:</p>
+            <ul class="actions" align="center">
+              <li><a href="images/tutorials/bandpower/data.txt" class="button special icon fa-download" download>Download the raw EEG data (.txt, ~200 Ko)</a></li>
+            </ul>
 
-              <pre><code class="python">import numpy as np
+            <p align="justify">Time to open your favorite Python editor! If you are new to Python, I strongly recommand using <a href="https://github.com/jupyterlab/jupyterlab" target="_blank">Jupyter Lab</a>. Loading the data is fairly easy:</p>
+
+            <pre><code class="python">import numpy as np
 data = np.loadtxt('data.txt')</code></pre>
 
-              <p align="justify">Let's take a look at the data:</p>
+            <p align="justify">Let's take a look at the data:</p>
 
-              <pre><code class="python">import matplotlib.pyplot as plt
+            <pre><code class="python">import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set(font_scale=1.2)
 
@@ -148,32 +163,48 @@ plt.title('N3 sleep EEG data (F3)')
 sns.despine()
 </code></pre>
 
-              <span class="image fit"><img src="images/tutorials/bandpower/signal.png" alt="" /></span>
+            <span class="image fit"><img src="images/tutorials/bandpower/signal.png" alt="" /></span>
 
-              <hr />
+            <hr />
 
-              <h4>Computing the power spectral density</h4>
+            <h4>Computing the power spectral density</h4>
 
-              <p align="justify">Now let's say that you want to compute the average power of the Delta frequency band (0.5 - 4.5 Hz). To do that, we first need to compute an estimate of the power spectral density. The most widely-used method to do that is the <a href="https://en.wikipedia.org/wiki/Welch%27s_method"
-                  target="_blank">Welch's periodogram</a>, which consists in averaging consecutive Fourier transform of small windows of the signal, with or without overlapping. The Welch's method improves the accuracy of the classic periodogram (i.e. just
-                squaring the absolute magnitudes of the FFT obtained on the whole signal). <br><br>The reason is simple: EEG data are always time-varying, meaning that if you look at a 30 seconds of EEG data, it is very (very) unlikely that the signal will looks like a perfct sum
-                of pure sines. Rather, the spectral content of the EEG changes over time, constantly modified by the neuronal activity at play under the scalp. Problem is, to return a true spectral estimate, a classic periodogram requires
-                the spectral content of the signal to be stationnary (i.e. time-unvarying) over the time period considered. Because it is never the case, the periodogram is generally biased and contains way too much variance (see the end of this tutorial).
-                By averaging the periodograms obtained over short segments of the windows, the Welch's method allows to drastically reduce this variance, at the cost of a loss in the frequency resolution. Indeed, the longer the signal is, the higher the
-                frequency resolution of the FFT is.
-                <br><br>In the example below, we are going to compute and plot a Welch's periodogram of our 30-seconds signal, by averaging over 4-seconds windows. We choose this 4 seconds limits to get at least two full cycles of the lowest frequency
-                of the delta band ((1 / 0.5 Hz) * 2 = 4 seconds).</p>
+            <p align="justify">In order to compute the average bandpower in the delta band, we first need to compute an estimate of the power spectral density. The most widely-used method to do that is the <a href="https://en.wikipedia.org/wiki/Welch%27s_method"
+                target="_blank">Welch's periodogram</a>, which consists in averaging consecutive Fourier transform of small windows of the signal, with or without overlapping.
 
-                <ul class="feature-icons">
-                  <li class="fa-exclamation-triangle">When using the Welch method, be aware that the window length directly affects the frequency resolution of the PSD. In this example, we are using a window of 4 seconds meaning that the frequency resolution of our PSD will be 4 bins per Hertz (i.e. 0.25 Hz step). This remains true regardless of the sampling frequency of the signal.
-                    Longer window gives better resolution, but at the cost of an increased variance (and thus reduced specifity for high frequencies).</li>
-                </ul>
+              <br><br>The Welch's method improves the accuracy of the classic periodogram. The reason is simple: EEG data are always time-varying, meaning that if you look at a 30 seconds of EEG data, it is very (very) unlikely that the signal
+              will looks like a perfect sum
+              of pure sines. Rather, the spectral content of the EEG changes over time, constantly modified by the neuronal activity at play under the scalp. Problem is, to return a true spectral estimate, a classic periodogram requires
+              the spectral content of the signal to be stationnary (i.e. time-unvarying) over the time period considered. Because it is never the case, the periodogram is generally biased and contains way too much variance (see the end of this
+              tutorial).
+              By averaging the periodograms obtained over short segments of the windows, the Welch's method allows to drastically reduce this variance. This comes at the cost, however, of a lower frequency resolution.
 
-              <pre><code class="python">from scipy import signal
+              Indeed, the frequency resolution is defined by:
+
+              $$F_{res} = \frac{F_s}{N} = \frac{F_s}{F_st} = \frac{1}{t}$$
+
+              where \(F_s\) is the sampling frequency of the signal, \(N\) the total number of samples and \(t\) the duration, in seconds, of the signal.
+
+              In other words, if we were to use the full length of our data (30 seconds), our final frequency resolution would be \(1 / 30 = 0.033\) Hz, which is 30 frequency bins per Hertz.
+              By using a 4-second sliding window, we reduce this frequency resolution to 4 frequency bins per Hertz, i.e. each step represents 0.25 Hz.
+
+              <br><br>
+              How do we define the optimal window duration then? A commonly used approach is to take a window sufficiently long to encompasses at least two full cycles of the lowest frequency of interest. In our case, our lowest frequency of
+              interest is 0.5 Hz so we will choose a window of \(2 / 0.5 = 4\) seconds.
+            </p>
+
+
+            <ul class="feature-icons">
+              <li class="fa-exclamation-triangle">Another conclusion from the equation above is that <b>the only thing that increases frequency resolution is time</b>. Changes in sampling frequency do not increase the frequency resolution but only
+                the frequency coverage. Read more on this <a href="https://www.quora.com/How-does-the-sampling-rate-influence-the-frequency-resolution-in-frequency-spectrum-in-FFT" target="_blank">here</a>.
+              </li>
+            </ul>
+
+            <pre><code class="python">from scipy import signal
 
 # Define window length (4 seconds)
 win = 4 * sf
-freqs, psd = signal.welch(data, sf, nperseg=win, scaling='density')
+freqs, psd = signal.welch(data, sf, nperseg=win)
 
 # Plot the power spectrum
 sns.set(font_scale=1.2, style='white')
@@ -187,84 +218,91 @@ plt.xlim([0, 20])
 sns.despine()
 </code></pre>
 
-              <span class="image fit"><img src="images/tutorials/bandpower/psd.png" alt="" /></span>
+            <span class="image fit"><img src="images/tutorials/bandpower/psd.png" alt="" /></span>
 
 
-              <p align="justify">The <code>freqs</code> vector contains the x-axis (frequency bins) and the <code>psd</code> vector contains the y-axis (power spectral density). The units of the power spectral density, when working with EEG data, is (micro)-Volts-squared per Hz
-                (uV^2/Hz).</p>
+            <p align="justify">The <code>freqs</code> vector contains the x-axis (frequency bins) and the <code>psd</code> vector contains the y-axis (power spectral density). The units of the power spectral density, when working with EEG data, is
+              usually micro-Volts-squared per Hz (\(uV^2 / H_z\)).</p>
 
-              <ul class="feature-icons">
-                <li class="fa-exclamation-triangle">Note that the maximum value of the x-axis is always half the sampling frequency, which corresponds to the <a href="https://en.wikipedia.org/wiki/Nyquist_frequency" target="_blank">Nyquist frequency</a>.</li>
-              </ul>
+            <ul class="feature-icons">
+              <li class="fa-exclamation-triangle">Note that the maximum value of the x-axis is always half the sampling frequency, which is exactly the <a href="https://en.wikipedia.org/wiki/Nyquist_frequency" target="_blank">Nyquist frequency</a>.
+                This is where the notion of frequency coverage comes into play: if our signal was sampled at 200 Hz instead of 100 Hz, the maximum value on the x-axis would be 200 / 2 = 100 Hz instead of 50 Hz.
+                In other words, <b>increasing the sampling frequency results in a larger frequency range</b>.</li>
+            </ul>
 
-              <hr />
+            <hr />
 
-              <h4>Defining the delta band</h4>
+            <h4>Defining the delta band</h4>
 
-              <p align="justify">Now, before computing the average delta bandpower, we need to find the frequency bins that intersect our delta band (i.e. 0.5 <= freqs <= 4).</p>
-
-              <pre><code class="python"># Define delta lower and upper limits
+            <p align="justify">Now, before computing the average delta bandpower, we need to find the frequency bins that intersect the delta frequency range.</p>
+<pre><code class="python"># Define delta lower and upper limits
 low, high = 0.5, 4
 
-# Find closest values in freqs vector
+# Find intersecting values in frequency vector
 idx_delta = np.logical_and(freqs >= low, freqs <= high)
 
-# Plot the power spectral density and fill the area comprising the delta band
+# Plot the power spectral density and fill the delta area
 plt.figure(figsize=(7, 4))
 plt.plot(freqs, psd, lw=2, color='k')
-plt.fill_between(freqs, psd, where=idx_delta, color='skyblue',
-                  linestyle=':', linewidth=1.5, edgecolor='grey')
+plt.fill_between(freqs, psd, where=idx_delta, color='skyblue')
 plt.xlabel('Frequency (Hz)')
-plt.ylabel('Power spectral density (V^2 / Hz)')
+plt.ylabel('Power spectral density (uV^2 / Hz)')
 plt.xlim([0, 10])
 plt.ylim([0, psd.max() * 1.1])
 plt.title("Welch's periodogram")
 sns.despine()
-</code></pre>
+</code> </pre>
 
-              <span class="image fit"><img src="images/tutorials/bandpower/psd_area.png" alt="" /></span>
+                    <span class="image fit"><img src="images/tutorials/bandpower/psd_area.png" alt="" /></span>
 
 
-              <hr />
+                    <hr />
 
-              <h4>Average band power</h4>
+                    <h4>Average band power</h4>
 
-              <p align="justify">The absolute delta power is equal to the blue area of the previous plot. As there is no closed-form formula to integrate this area, we need to approximate it. This is commonly achieved using the <a href="https://en.wikipedia.org/wiki/Simpson%27s_rule"
-                  target="_blank">composite Simpson's rule</a>. The idea behind it is actually very simple: we decompose this area into several parabola and then sum the area of these parabola. Note that this could also be done using trapezoid (trapezoid
-                rule) or rectangle (as in the Matlab <a href="https://www.mathworks.com/help/signal/ref/bandpower.html" target="_blank">bandpower</a> function), but parabola typically give <a href="https://stackoverflow.com/a/44915647/10581531" target="_blank">better estimates</a>.</p>
+                    <p align="justify">The absolute delta power is equal to the blue area of the previous plot. As there is no closed-form formula to integrate this area, we need to approximate it. This is commonly achieved using the <a href="https://en.wikipedia.org/wiki/Simpson%27s_rule"
+                        target="_blank">composite Simpson's rule</a>. The idea behind it is actually very simple: we decompose this area into several parabola and then sum the area of these parabola. Note that this could also be done using trapezoid
+                      (trapezoid
+                      rule) or rectangle (as in the Matlab <a href="https://www.mathworks.com/help/signal/ref/bandpower.html" target="_blank">bandpower</a> function), but parabola typically give <a href="https://stackoverflow.com/a/44915647/10581531"
+                        target="_blank">better estimates</a>.</p>
 
-              <pre><code class="python"># Compute the absolute power by approximating the area under the curve
-from scipy.integrate import simps
-delta_power = simps(psd[idx_delta], freqs[idx_delta]) # Same as: (freqs[1] - freqs[0]) * simps(psd[idx_delta])
+                    <pre><code class="python">from scipy.integrate import simps
+
+# Frequency resolution
+freq_res = freqs[1] - freqs[0]  # = 1 / 4 = 0.25
+
+# Compute the absolute power by approximating the area under the curve
+delta_power = simps(psd[idx_delta], dx=freq_res)
 print('Absolute delta power: %.3f V^2' % delta_power)
 </code></pre>
 
-              <blockquote><b>Absolute &delta; power:</b> 321.064 volts-squared</blockquote>
+                    <blockquote><b>Absolute &delta; power:</b> 321.064 volts-squared</blockquote>
 
-              <h5>Relative power</h5>
+                    <h5>Relative power</h5>
 
-              <p align="justify">In practice, rather than reporting the absolute band power, one may want to express the power in a frequency band as a percentage of the total power of the signal. This is called the relative band power. It can be calculated very easily
-                from the above:
-              </p>
+                    <p align="justify">In practice, rather than reporting the absolute band power, one may want to express the power in a frequency band as a percentage of the total power of the signal. This is called the relative band power. It can
+                      be calculated very easily
+                      from the above:
+                    </p>
 
-              <pre><code class="python"># Relative delta power (expressed as a percentage of total power)
-total_power = simps(psd, freqs)
+                    <pre><code class="python"># Relative delta power (expressed as a percentage of total power)
+total_power = simps(psd, dx=freq_res)
 delta_rel_power = delta_power / total_power
 print('Relative delta power: %.3f' % delta_rel_power)
 </code></pre>
 
-              <blockquote><b>Relative &delta; power:</b> 0.787</blockquote>
+                    <blockquote><b>Relative &delta; power:</b> 0.787</blockquote>
 
-              <p align="justify">In other words, 78.7% of the total power of the signal is contained in the delta frequency band.</p>
+                    <p align="justify">In other words, 78.7% of the total power of the signal is contained in the delta frequency band.</p>
 
-              <hr />
+                    <hr />
 
-              <h4>Generalization</h4>
+                    <h4>Generalization</h4>
 
-              <p align="justify">The function below is a generalization of the above which can be used to easily get the average absolute or relative power in a specific frequency band. It is very similar to the Matlab <a href="https://www.mathworks.com/help/signal/ref/bandpower.html"
-                  target="_blank">bandpower</a> function, the two main differences being that it uses a Welch's periodogram instead of a classical periodogram, and parabola instead of rectangles to approximate the area.</p>
+                    <p align="justify">The function below is a generalization of the above which can be used to easily get the average absolute or relative power in a specific frequency band. It is very similar to the Matlab <a href="https://www.mathworks.com/help/signal/ref/bandpower.html"
+                        target="_blank">bandpower</a> function, with the exceptions that it uses a Welch's periodogram instead of a classical periodogram, and it approximates the area using parabola instead of rectangles.</p>
 
-              <pre><code class="python">def bandpower(data, sf, band, window_sec=None, relative=False):
+                    <pre><code class="python">def bandpower(data, sf, band, window_sec=None, relative=False):
     """Compute the average power of the signal x in a specific frequency band.
 
     Parameters
@@ -286,51 +324,44 @@ print('Relative delta power: %.3f' % delta_rel_power)
     ------
     bp : float
         Absolute or relative band power.
-
-    Examples
-    ------
-    1. Absolute and relative power in the delta band
-        >>> delta = bandpower(data, 100, [0.5, 4])
-        >>> delta_relative = bandpower(data, 100, [0.5, 4], relative=True)
-
-    2. Delta / beta ratio
-        >>> window_sec = 4
-        >>> delta = bandpower(data, 100, [0.5, 4], window_sec)
-        >>> beta = bandpower(data, 100, [12, 30], window_sec)
-        >>> db_ratio = delta / beta
     """
     from scipy.signal import welch
     from scipy.integrate import simps
     band = np.asarray(band)
     low, high = band
 
-    # Compute the modified periodogram (Welch)
+    # Define window length
     if window_sec is not None:
         nperseg = window_sec * sf
     else:
         nperseg = (2 / low) * sf
 
-    freqs, psd = welch(data, sf, nperseg=nperseg, scaling='density')
+    # Compute the modified periodogram (Welch)
+    freqs, psd = welch(data, sf, nperseg=nperseg)
+
+    # Frequency resolution
+    freq_res = freqs[1] - freqs[0]
 
     # Find closest indices of band in frequency vector
     idx_band = np.logical_and(freqs >= low, freqs <= high)
 
     # Integral approximation of the spectrum using Simpson's rule.
-    bp = simps(psd[idx_band], freqs[idx_band])
+    bp = simps(psd[idx_band], dx=freq_res)
 
     if relative:
-        bp /= simps(psd, freqs)
+        bp /= simps(psd, dx=freq_res)
     return bp
 </code></pre>
 
-              <hr />
+                    <hr />
 
-              <h4>Ratio between two frequency bands</h4>
+                    <h4>Ratio between two frequency bands</h4>
 
-              <p align="justify">It is also very common to report the ratios between two frequency bands. For instance, the delta / beta ratio is a well-known index of slow-wave sleep quality. When computing ratios between two bands, it is important to control that the
-                window length of the periodogram is the same for the two bands. Indeed, if you are using a different window length for the two bands, this will result in two different periodograms and the ratio will therefore be meaningless.</p>
+                    <p align="justify">It is also very common to report the ratios between two frequency bands. For instance, the delta / beta ratio is a well-known index of slow-wave sleep quality. When computing ratios between two bands, it is
+                      important to control that the
+                      window length of the periodogram is the same for the two bands. Indeed, if you are using a different window length for the two bands, this will result in two different periodograms and the ratio will therefore be meaningless.</p>
 
-              <pre><code class="python"># Define the duration of the window to be 4 seconds
+                    <pre><code class="python"># Define the duration of the window to be 4 seconds
 win_sec = 4
 
 # Delta/beta ratio based on the absolute power
@@ -340,35 +371,41 @@ db = bandpower(data, sf, [0.5, 4], win_sec) / bandpower(data, sf, [12, 30], win_
 db_rel = bandpower(data, sf, [0.5, 4], win_sec, True) / bandpower(data, sf, [12, 30], win_sec, True)
 </code></pre>
 
-              <blockquote><b>&delta;/&beta; ratio (absolute)</b>: 42.214<br>
-                <b>&delta;/&beta; ratio (relative)</b>: 42.214</blockquote>
+                    <blockquote><b>&delta;/&beta; ratio (absolute)</b>: 42.214<br>
+                      <b>&delta;/&beta; ratio (relative)</b>: 42.214</blockquote>
 
-              <hr />
+                    <hr />
 
-              <h4>Using the multitaper method</h4>
+                    <h4>Using the multitaper method</h4>
 
-              <p align="justify">Multitaper is a spectral analysis method first developed by David J. Thompson in 1982 in order to overcome some of the limitations of the classical spectral estimation techniques. It provides a more robust spectral estimation than the classical
-                and Welch's periodograms, by combining the advantages of the two methods: high frequency resolution and low variance.
-                <br><br>To understand how it works, I really encourage you to read <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5343535/">this paper by Prerau et al. (2017)</a> that explains very well what is multitaper and how sleep research
-                and sleep medicine could benefit from it. Another source that was useful for me was the <a href="https://www.mathworks.com/examples/signal/mw/signal-ex41524780-multitaper-method" target="_blank">Matlab documentation on Multitaper spectral analyses</a>.
-                <br><br>In a nutshell, the multitaper method starts by filtering the original signal with a set of optimal bandpass filter, called Slepian sequences (or DPSS). This filtering is done by convoluting the original signal with the Slepian sequences. Second, a classic
-                periodogram is calculated for each of these new filtered (or "tapered") data and the final spectrum is then obtained by averaging over all the resulting
-                periodogram. The real strength of the multitaper method comes from the fact that the Slepian sequences are orthogonal to all others and therefore the tapered signals provide statistically independent estimates of the underlying spectrum.
-                In other words, each filtered signal will highlight one specific aspect of the spectral content of the signal.</p>
+                    <p align="justify">Multitaper is a spectral analysis method first developed by David J. Thompson in 1982 in order to overcome some of the limitations of the classical spectral estimation techniques. It provides a more robust
+                      spectral estimation than the classical
+                      and Welch's periodograms, by combining the advantages of the two methods: high frequency resolution and low variance.
+                      <br><br>To understand how it works, I really encourage you to read <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5343535/">this paper by Prerau et al. (2017)</a> that explains very well what is multitaper and how sleep
+                      research
+                      and sleep medicine could benefit from it. Another source that was useful for me was the <a href="https://www.mathworks.com/examples/signal/mw/signal-ex41524780-multitaper-method" target="_blank">Matlab documentation on
+                        Multitaper spectral analyses</a>.
+                      <br><br>In a nutshell, the multitaper method starts by filtering the original signal with a set of optimal bandpass filter, called Slepian sequences (or DPSS). This filtering is done by convoluting the original signal with the
+                      Slepian sequences. Second, a classic
+                      periodogram is calculated for each of these new filtered (or "tapered") data and the final spectrum is then obtained by averaging over all the resulting
+                      periodogram. The real strength of the multitaper method comes from the fact that the Slepian sequences are orthogonal to all others and therefore the tapered signals provide statistically independent estimates of the underlying
+                      spectrum.
+                      In other words, each filtered signal will highlight one specific aspect of the spectral content of the signal.</p>
 
 
-              <span class="image fit">
-  <figure>
-  <img src="images/tutorials/bandpower/prerau_article.jpg" alt="The Multitaper technique (Prerau et al. 2017)"/>
-  <figcaption>Schematic of multitaper spectral estimation (from <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5343535/">Prerau et al. 2017</a>)</figcaption>
-</figure>
-</span>
+                    <span class="image fit">
+                      <figure>
+                        <img src="images/tutorials/bandpower/prerau_article.jpg" alt="The Multitaper technique (Prerau et al. 2017)" />
+                        <figcaption>Schematic of multitaper spectral estimation (from <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5343535/">Prerau et al. 2017</a>)</figcaption>
+                      </figure>
+                    </span>
 
-              <h5>Average bandpower using Multitaper</h5>
-              <p align="justify">The multitaper spectral estimation method is implemented in the <a href="https://www.martinos.org/mne/stable/index.html" target="_blank">MNE-Python package</a>. In the following example, I adapted the bandpower function that we have created
-                previously to add the multitaper method.</p>
+                    <h5>Average bandpower using Multitaper</h5>
+                    <p align="justify">The multitaper spectral estimation method is implemented in the <a href="https://www.martinos.org/mne/stable/index.html" target="_blank">MNE-Python package</a>. In the following example, I adapted the bandpower
+                      function that we have created
+                      previously to add the multitaper method.</p>
 
-              <pre><code class="python">def bandpower(data, sf, band, method='welch', window_sec=None, relative=False):
+                    <pre><code class="python">def bandpower(data, sf, band, method='welch', window_sec=None, relative=False):
   """Compute the average power of the signal x in a specific frequency band.
 
   Requires MNE-Python >= 0.14.
@@ -402,9 +439,6 @@ db_rel = bandpower(data, sf, [0.5, 4], win_sec, True) / bandpower(data, sf, [12,
   band = np.asarray(band)
   low, high = band
 
-  if band.size != 2:
-      raise ValueError("You must specify the lower and upper frequencies of the band.")
-
   # Compute the modified periodogram (Welch)
   if method == 'welch':
       if window_sec is not None:
@@ -412,25 +446,29 @@ db_rel = bandpower(data, sf, [0.5, 4], win_sec, True) / bandpower(data, sf, [12,
       else:
           nperseg = (2 / low) * sf
 
-      freqs, psd = welch(data, sf, nperseg=nperseg, scaling='density')
+      freqs, psd = welch(data, sf, nperseg=nperseg)
 
   elif method == 'multitaper':
       psd, freqs = psd_array_multitaper(data, sf, adaptive=True, normalization='full')
+
+  # Frequency resolution
+  freq_res = freqs[1] - freqs[0]
 
   # Find index of band in frequency vector
   idx_band = np.logical_and(freqs >= low, freqs <= high)
 
   # Integral approximation of the spectrum using parabola (Simpson's rule)
-  bp = simps(psd[idx_band], freqs[idx_band])
+  bp = simps(psd[idx_band], dx=freq_res)
 
   if relative:
-      bp /= simps(psd, freqs)
+      bp /= simps(psd, dx=freq_res)
   return bp
 </code></pre>
 
-              <p align="justify">Let's try our new function with the code below. One advantage of the Multitaper method compared to the Welch's method is that we don't need to specify a window duration as it will basically compute the periodogram on the whole signal.</p>
+                    <p align="justify">Let's try our new function with the code below. One advantage of the Multitaper method compared to the Welch's method is that we do not need to specify a window duration as it will basically compute the
+                      periodogram on the whole signal. Since we are using the full length of the signal, the frequency resolution of the multitaper estimate will be 1 / 30 = 0.033 Hz.</p>
 
-            <pre><code class="python"># Multitaper delta power
+                    <pre><code class="python"># Multitaper delta power
 bp = bandpower(data, sf, [0.5, 4], 'multitaper')
 bp_rel = bandpower(data, sf, [0.5, 4], 'multitaper', relative=True)
 print('Absolute delta power: %.3f' % bp)
@@ -446,18 +484,19 @@ print('Delta/beta ratio (absolute): %.3f' % db)
 print('Delta/beta ratio (relative): %.3f' % db_rel)
 </code></pre>
 
-              <blockquote>
-                <b>Absolute &delta; power</b>: 311.559<br>
-                <b>Relative &delta; power</b>: 0.790<br>
-                <b>&delta;/&beta; ratio (absolute)</b>: 41.225<br>
-                <b>&delta;/&beta; ratio (relative)</b>: 41.225
-              </blockquote>
+                    <blockquote>
+                      <b>Absolute &delta; power</b>: 311.559<br>
+                      <b>Relative &delta; power</b>: 0.790<br>
+                      <b>&delta;/&beta; ratio (absolute)</b>: 41.225<br>
+                      <b>&delta;/&beta; ratio (relative)</b>: 41.225
+                    </blockquote>
 
-              <p align="justify">The results are very close to the one obtained using Welch's method. This should remain true as long as your data are not too noisy. However, if you are working with noisy data, the multitaper method will always provide a much more
-                robust spectral estimation than Welch's.
-                <br><br>Just for fun, let's compare the power spectral density estimate obtained using a classic periodogram, a Welch's periodogram, and the multitaper method:</p>
+                    <p align="justify">The results are very close to the one obtained using Welch's method. This should remain true as long as your data are not too noisy. However, if you are working with noisy data, the multitaper method will
+                      always provide a much more
+                      robust spectral estimation than Welch's.
+                      <br><br>Just for fun, let's compare the power spectral density estimate obtained using a classic periodogram, a Welch's periodogram, and the multitaper method:</p>
 
-              <pre><code class="python">def plot_spectrum_methods(data, sf, window_sec, band=None, dB=False):
+                    <pre><code class="python">def plot_spectrum_methods(data, sf, window_sec, band=None, dB=False):
     """Plot the periodogram, Welch's and multitaper PSD.
 
     Requires MNE-Python >= 0.14.
@@ -523,41 +562,43 @@ print('Delta/beta ratio (relative): %.3f' % db_rel)
 plot_spectrum_methods(data, sf, 4, [0.5, 2], dB=True)
 </code></pre>
 
-              <span class="image fit">
-          <img src="images/tutorials/bandpower/psd_comp.png" alt="PSD methods comparison"/>
-        </span>
+                    <span class="image fit">
+                      <img src="images/tutorials/bandpower/psd_comp.png" alt="PSD methods comparison" />
+                    </span>
 
-              <ul>
-                <li>The periodogram has a good frequency resolution (one frequency bin = 0.033 Hz) but way too much variance.</li>
-                <li>The Welch's periodogram has a low variance, at the cost of a lower frequency resolution (one frequency bin = 0.25 Hz).</li>
-                <li>The multitaper periodogram has the advantages of the two previous methods: high frequency resolution and low variance.</li>
-              </ul>
+                    <ul>
+                      <li>The classic periodogram has a good frequency resolution (one frequency bin = 0.033 Hz) but way too much variance.</li>
+                      <li>The Welch's periodogram has a low variance, at the cost of a lower frequency resolution (one frequency bin = 0.25 Hz).</li>
+                      <li>The multitaper periodogram has the advantages of the two previous methods: high frequency resolution and low variance.</li>
+                    </ul>
 
-              <h5>Computational cost</h5>
+                    <h5>Computational cost</h5>
 
-              <pre><code class="python">%timeit bandpower(data, sf, [0.5, 4], method="welch", relative=True)
+                    <pre><code class="python">%timeit bandpower(data, sf, [0.5, 4], method="welch", relative=True)
 %timeit bandpower(data, sf, [0.5, 4], method="multitaper", relative=True)
 </code></pre>
 
-              <blockquote>
-                345 µs ± 8.53 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)<br> 78.9 ms ± 2.82 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
-              </blockquote>
+                    <blockquote>
+                      345 µs ± 8.53 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)<br> 78.9 ms ± 2.82 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+                    </blockquote>
 
-              <p align="justify">The multitaper is more computationally intensive than other methods. In the example above, the multitaper method was about 200 times slower than the Welch's method. Using 30-sec of data sampled at 100Hz, the difference in the time of execution
-                was about ~70ms. Imagine now having 6 hours of data sampled at 1000Hz, it would take about 3 seconds to compute the periodogram using Welch's method, but almost 10 minutes using the multitaper method!
-                <br><br>While the multitaper methods always provide a more robust spectral estimation, I think that it is important to understand that the spectral estimation is case-specific. For example, if you have clean data acquired on young healthy
-                individuals, there's a good chance that the multitaper spectral estimation will not differ that much from the Welch's estimate. Furthermore, the Welch's method is probably the most used spectral estimation technique to this day and is
-                quite intuitive to understand. By contrast, the multitaper is a relatively new method that is conceptually harder to grasp.
-                <p>
+                    <p align="justify">The multitaper is more computationally intensive than other methods. In the example above, the multitaper method was about 200 times slower than the Welch's method. Using 30-sec of data sampled at 100Hz, the
+                      difference in the time of execution
+                      was about ~70ms. Imagine now having 6 hours of data sampled at 1000Hz, it would take about 3 seconds to compute the periodogram using Welch's method, but almost 10 minutes using the multitaper method!
+                      <br><br>Although the multitaper methods always provide a more robust spectral estimation, I think that choosing which technique one should use depends on the data at hands. For example, if you have clean data acquired on
+                      young healthy individuals, there's a good chance that the multitaper spectral estimation will not differ that much from the Welch's estimate. Furthermore, the Welch's method is probably the most used spectral estimation technique to this day
+                      and is quite intuitive to understand. By contrast, the multitaper is a relatively new method that is conceptually harder to grasp.
+                      <p>
 
-                  <h5>Multitaper spectrogram?</h5>
+                        <h5>Multitaper spectrogram?</h5>
 
-                  <p align="justify">It is also possible to compute a spectrogram (time in the x-axis, spectral density on the y-axis) using the multitaper method. For instance, the <a href="http://visbrain.org/sleep" target="_blank">Sleep module of the Visbrain suite</a> include an option to display a Fourier, wavelet, or multitaper spectrogram. As you can see on the figure below, the multitaper spectrogram is cleaner than the Fourier spectrogram.
-                    <p>
+                        <p align="justify">It is also possible to compute a spectrogram (time in the x-axis, spectral density on the y-axis) using the multitaper method. For instance, the <a href="http://visbrain.org/sleep" target="_blank">Sleep
+                            module of the Visbrain suite</a> include an option to display a Fourier, wavelet, or multitaper spectrogram. As you can see on the figure below, the multitaper spectrogram is cleaner than the Fourier spectrogram.
+                          <p>
 
-                      <span class="image fit">
-                      <img src="http://visbrain.org/_images/sleep_spectro_methods.png" alt="Spectrogram"/>
-                  </span>
+                            <span class="image fit">
+                              <img src="http://visbrain.org/_images/sleep_spectro_methods.png" alt="Spectrogram" />
+                            </span>
 
 
       </div>

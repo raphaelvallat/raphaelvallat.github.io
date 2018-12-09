@@ -22,6 +22,14 @@
 		display: block;
 	}
 
+	figcaption {
+		margin-top: 0.5em;
+		padding: 0.5em;
+		font-size: 85%;
+		text-align: justify;
+		background-color: #f1fafb;
+	}
+
 	body {
 		line-height: 1;
 	}
