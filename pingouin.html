@@ -85,11 +85,11 @@
         </header>
 
         <span class="image fit">
-            <img src="https://raphaelvallat.github.io/pingouin/build/html/_images/logo_pingouin.png" alt="" />
+            <img src="https://pingouin-stats.org/_images/logo_pingouin.png" alt="" />
         </span>
 
         <p align="justify">Welcome to this first tutorial on the Pingouin statistical package. In this tutorial, you will learn how to compute a two-way mixed design analysis of variance (ANOVA) using the Pingouin statistical package. This tutorial is mainly geared for
-          beginner, and more advanced users can check the official <a href="https://raphaelvallat.github.io/pingouin/build/html/api.html" target="_blank">Pingouin API</a>.</p>
+          beginner, and more advanced users can check the official <a href="https://pingouin-stats.org/api.html" target="_blank">Pingouin API</a>.</p>
 
         <ul class="feature-icons">
           <li class="fa-code">Source code of Pingouin on the <a href="https://github.com/raphaelvallat/pingouin" target="_blank">GitHub repository</a></li>
@@ -268,7 +268,7 @@ sns.pointplot(data=df, x='Time', y='Scores', hue='Group', dodge=True, markers=['
 
           <h4>ANOVA</h4>
 
-          <p align="justify">To test the significance of this effect, we will need to use a mixed-design ANOVA. That is where <b>Pingouin</b> comes into play. We are going to use the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.mixed_anova.html#pingouin.mixed_anova"
+          <p align="justify">To test the significance of this effect, we will need to use a mixed-design ANOVA. That is where <b>Pingouin</b> comes into play. We are going to use the <a href="https://pingouin-stats.org/generated/pingouin.mixed_anova.html#pingouin.mixed_anova"
               target="_blank">mixed_anova</a> function with the following input arguments:</p>
 
           <ul>
@@ -339,7 +339,7 @@ pg.print_table(aov)
           </table>
 
           <p align="justify">We can see that there is indeed a significant interaction, F(2, 116)=3.45, p=.035. The effect size (partial eta-square) of this interaction is .056. <br><br>However, this does not tell us which specific contrast is <i>actually</i> significant.
-            For this reason, we need to perform post-hocs tests on the interaction. This can be done very easily using the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests" target="_blank">pairwise_ttests</a>            function:</p>
+            For this reason, we need to perform post-hocs tests on the interaction. This can be done very easily using the <a href="https://pingouin-stats.org/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests" target="_blank">pairwise_ttests</a>            function:</p>
 
           <pre><code class="python">posthocs = pg.pairwise_ttests(dv='Scores', within='Time', between='Group', subject='Subject',
 			      effects='interaction', data=df)
@@ -408,7 +408,7 @@ pg.print_table(posthocs)
 
             <h5>Correction for multiple comparisons</h5>
 
-            <p align="justify">If you have a large number of groups and/or measurements, you might want to correct the p-values for multiple comparisons. This can be done very easily using the <em>padjust</em> argument of the <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests"
+            <p align="justify">If you have a large number of groups and/or measurements, you might want to correct the p-values for multiple comparisons. This can be done very easily using the <em>padjust</em> argument of the <a href="https://pingouin-stats.org/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests"
                 target="_blank">pairwise_ttests</a> function:</p>
 
             <pre><code class="python">pg.pairwise_ttests(dv='Scores', within='Time', between='Group', subject='Subject',
@@ -420,7 +420,7 @@ pg.print_table(posthocs)
             <h5>Missing values and unbalanced design</h5>
 
             <p align="justify">If one subject has one or more missing observations(for example, no tests scores in January), you might want to remove this subject from the ANOVA and post-hocs analyses. This is possible using the <code>remove_na=True</code> argument of the
-              <a href="https://raphaelvallat.github.io/pingouin/build/html/generated/pingouin.mixed_anova.html#pingouin.mixed_anova" target="_blank">mixed_anova</a> function. Subjects with missing observations will be automatically removed when computing
+              <a href="https://pingouin-stats.org/generated/pingouin.mixed_anova.html#pingouin.mixed_anova" target="_blank">mixed_anova</a> function. Subjects with missing observations will be automatically removed when computing
               post-hoc analyses.
               <br><br>On another note, Pingouin also works well with unbalanced design (i.e. different number of students per group). Please find an example in the full script of this tutorial (link above).</p>
 
