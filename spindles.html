@@ -89,6 +89,10 @@
         <p align="justify">Welcome to this second tutorial on EEG signal processing in Python!
           <br><br>We are going to see how to create a simple yet efficient sleep spindles detection algorithm in Python based on Morlet's wavelet.</p>
 
+        <ul class="feature-icons">
+        <li class="fa-exclamation-triangle"><b><i>Update (01/2019)</b></i> : since the initial publication of this article, I have been working on a more robust sleep spindle detection algorithm called YASA (<i>Yet Another Spindle Algorithm</i>). Please check it out on <a href="https://github.com/raphaelvallat/yasa" target="_blank">GitHub</a>.</li>
+        </ul>
+
         <hr />
 
         <h4>Foreword</h4>
@@ -106,9 +110,10 @@
 
           <br><br>Because of the large number of spindles typically seen in one night, visual identification is not a reasonable option because it would require too much time.
           Rather, a growing amount of research has been dedicated to finding the best possible automatic detection algorithm that could adapt to a variety of spindles morphologies and data quality.
-          As a result, most sleep labs around the world use their own house-made sleep spindles algorithm (which are often obscure!).
+          As a result, most sleep labs around the world use their own in-house sleep spindles algorithm, which are often closed-source and not validated.
 
           <br><br>I want to emphasize that the goal of this tutorial is NOT to provide the best spindles detection algorithm out there! Rather, I just want to show how to create an efficient and simple algorithm (less than 20 lines of Python code).
+          However, if you are looking for a <b>more advanced algorithm</b>, I invite you to have a look at my GitHub repository <a href="https://github.com/raphaelvallat/yasa" target="_blank"><b>YASA</b> (<i>Yet Another Spindle Algorithm</i>)</a>.
         <p>
 
        <hr />
