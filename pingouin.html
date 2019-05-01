@@ -30,6 +30,7 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-118198513-1"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
+
     function gtag() {
       dataLayer.push(arguments);
     }
@@ -85,10 +86,11 @@
         </header>
 
         <span class="image fit">
-            <img src="https://pingouin-stats.org/_images/logo_pingouin.png" alt="" />
+          <img src="https://pingouin-stats.org/_images/logo_pingouin.png" alt="" />
         </span>
 
-        <p align="justify">Welcome to this first tutorial on the Pingouin statistical package. In this tutorial, you will learn how to compute a two-way mixed design analysis of variance (ANOVA) using the Pingouin statistical package. This tutorial is mainly geared for
+        <p align="justify">Welcome to this first tutorial on the Pingouin statistical package. In this tutorial, you will learn how to compute a two-way mixed design analysis of variance (ANOVA) using the Pingouin statistical package. This tutorial
+          is mainly geared for
           beginner, and more advanced users can check the official <a href="https://pingouin-stats.org/api.html" target="_blank">Pingouin API</a>.</p>
 
         <ul class="feature-icons">
@@ -99,31 +101,34 @@
 
         <h4>Installation</h4>
 
-        <p align="justify">To install Pingouin, you need to have <a href="https://www.python.org/downloads/" target="_blank">Python 3</a> installed on your computer. If you are using a Mac or Windows, I strongly recommand installing Python via the <a href="https://www.anaconda.com/download/" target="_blank">Anaconda distribution</a>.<br><br>To install pingouin, just open a terminal and type the following lines:</p>
+        <p align="justify">To install Pingouin, you need to have <a href="https://www.python.org/downloads/" target="_blank">Python 3</a> installed on your computer. If you are using a Mac or Windows, I strongly recommand installing Python via the
+          <a href="https://www.anaconda.com/download/" target="_blank">Anaconda distribution</a>.<br><br>To install pingouin, just open a terminal and type the following lines:</p>
 
-        <pre><code class="bash">pip install pingouin</code></pre>
+        <pre><code class="bash">pip install --upgrade pingouin</code></pre>
 
-        <p>Once Pingouin is installed, you can simply load it in a python script or ipython console:
+        <p>Once Pingouin is installed, you can simply load it in a python script, ipython console, or <a href="https://jupyterlab.readthedocs.io/en/stable/" target="_blank">Jupyter notebook</a>:
 
           <pre><code class="python">import pingouin as pg</code></pre>
 
           <hr />
 
-          <h4>Create data</h4>
+          <h4>Simulate the data</h4>
 
-          <p align="justify">Let's say that we are interested in how meditation can improve school performances in primary school students. If we want to study that, one way would be to split a group of student into a control group and a meditation group, i.e. a certain
+          <p align="justify">For the sake of the example, let's say that we are interested in how meditation can improve school performances in primary school students. If we want to study that, one way would be to split a group of student into a
+            control group and a meditation group, i.e. a certain
             number of students will be instructed to meditate for 20 minutes a day every day of the week, while the remaining students will be instructed not to change anything to their usual daily routine. This factor is our between-group factor.
-            <br><br>Now, we want to examine how meditation significantly improves or worsens the performances over time, starting from the beginning of the school year (August) to the end of the school year. To study that, we are going to asses their
+            <br><br>Now, we want to examine how meditation significantly improves or worsens the performances over time, starting from the beginning of the school year (August) to the end of the school year. To study that, we are going to asses
+            their
             school performances at three time points during the year: August (or time = 0 months), January (time = +6months) and June (time = +12 months).
             <br><br> To sum up, we have:
             <ul>
-              <li>One dependant variable: the test scores</li>
-              <li>One within-group variable, time of the year, with three levels (August, January, June)</li>
-              <li>One between-group variable, Group, with two levels (Control, Meditation)</li>
-              <li>One subject identifier variable, Subject</li>
+              <li>A dependent variable: the test scores</li>
+              <li>A within-group variable, time of the year, with three levels (August, January, June)</li>
+              <li>A between-group variable, Group, with two levels (Control, Meditation)</li>
+              <li>A subject variable, Subject</li>
             </ul>
 
-            Let's generate this fake dataset using Pandas:
+            Let's generate this fake dataset using Numpy and Pandas:
 
           </p>
 
@@ -338,15 +343,17 @@ pg.print_table(aov)
             </tbody>
           </table>
 
-          <p align="justify">We can see that there is indeed a significant interaction, F(2, 116)=3.45, p=.035. The effect size (partial eta-square) of this interaction is .056. <br><br>However, this does not tell us which specific contrast is <i>actually</i> significant.
-            For this reason, we need to perform post-hocs tests on the interaction. This can be done very easily using the <a href="https://pingouin-stats.org/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests" target="_blank">pairwise_ttests</a>            function:</p>
+          <p align="justify">We can see that there is indeed a significant interaction, F(2, 116)=3.45, p=.035. The effect size (partial eta-square) of this interaction is .056. <br><br>However, this does not tell us which specific contrast is <i>actually</i>
+            significant.
+            For this reason, we need to perform post-hocs tests on the interaction. This can be done very easily using the <a href="https://pingouin-stats.org/generated/pingouin.pairwise_ttests.html#pingouin.pairwise_ttests" target="_blank">pairwise_ttests</a>
+            function:</p>
 
-          <pre><code class="python">posthocs = pg.pairwise_ttests(dv='Scores', within='Time', between='Group', subject='Subject',
-			      effects='interaction', data=df)
+          <pre><code class="python">posthocs = pg.pairwise_ttests(dv='Scores', within='Time', between='Group',
+                              subject='Subject', data=df)
 pg.print_table(posthocs)
 </code></pre>
 
-          <p align="justify">which gives us <i>(note that for display purpose I removed some columns from the original table)</i>:</p>
+          <p align="justify">which gives us <i>(note that for display purpose I removed some rows and columns from the original table)</i>:</p>
 
           <table>
             <caption>POST HOC TESTS</caption>
@@ -395,7 +402,8 @@ pg.print_table(posthocs)
               </tr>
             </tbody>
           </table>
-          <p align="justify">Our visual impression is therefore confirmed: there is a <b>significant increase in test scores in the meditator group 12 months after the beginning of the experiment</b> (T=-2.7, p-unc=.008, Bayes Factor = 5.593). The corrected effect size (<a href="http://www.statisticshowto.com/hedges-g/">Hedges g</a>)
+          <p align="justify">Our visual impression is therefore confirmed: there is a <b>significant increase in test scores in the meditator group 12 months after the beginning of the experiment</b> (T=-2.7, p-unc=.008, Bayes Factor = 5.593). The
+            corrected effect size (<a href="http://www.statisticshowto.com/hedges-g/">Hedges g</a>)
             is approximately 0.70 and can therefore be considered, according to <a href="https://en.wikipedia.org/wiki/Cohen%27s_h#Interpretation">Cohen's rule of thumb</a>, as large.
 
             <ul class="actions" align="center">
@@ -412,22 +420,32 @@ pg.print_table(posthocs)
                 target="_blank">pairwise_ttests</a> function:</p>
 
             <pre><code class="python">pg.pairwise_ttests(dv='Scores', within='Time', between='Group', subject='Subject',
-                   effects='interaction', data=df, padjust='holm')
+                   data=df, padjust='holm')
 </code></pre>
 
             <p align="justify"></p>
 
             <h5>Missing values and unbalanced design</h5>
 
-            <p align="justify">If one subject has one or more missing observations(for example, no tests scores in January), you might want to remove this subject from the ANOVA and post-hocs analyses. This is possible using the <code>remove_na=True</code> argument of the
-              <a href="https://pingouin-stats.org/generated/pingouin.mixed_anova.html#pingouin.mixed_anova" target="_blank">mixed_anova</a> function. Subjects with missing observations will be automatically removed when computing
-              post-hoc analyses.
+            <p align="justify">If one subject has one or more missing observations (for example, no tests scores in January), this subject will need to be removed from the ANOVA and post-hocs analyses. This is done automatically by the two aforementionned Pingouin functions. However, if your data really has a lot of missing values, you may want to consider alternative analyses methods, such as linear mixed-effects modelling, which better accomodates for missing data (see the excellent <a href="https://cran.r-project.org/web/packages/lme4/lme4.pdf" target="_blank">lme4</a> package in R).
               <br><br>On another note, Pingouin also works well with unbalanced design (i.e. different number of students per group). Please find an example in the full script of this tutorial (link above).</p>
+
+              <h5>Other ANOVA functions in Pingouin</h5>
+
+              <ul>
+                <li><a href="https://pingouin-stats.org/generated/pingouin.anova.html#pingouin.anova" target="_blank">pingouin.anova</a>: One-way and two-way ANOVA</li>
+                <li><a href="https://pingouin-stats.org/generated/pingouin.ancova.html#pingouin.ancova" target="_blank">pingouin.ancova</a>: ANCOVA with one or more covariate(s)</li>
+                <li><a href="https://pingouin-stats.org/generated/pingouin.welch_anova.html#pingouin.welch_anova" target="_blank">pingouin.welch_anova</a>: One-way Welch ANOVA</li>
+                <li><a href="https://pingouin-stats.org/generated/pingouin.rm_anova.html#pingouin.rm_anova" target="_blank">pingouin.rm_anova</a>: One-way and two-way repeated measures ANOVA</li>
+                <li><a href="https://pingouin-stats.org/generated/pingouin.mixed_anova.html#pingouin.mixed_anova" target="_blank">pingouin.mixed_anova</a>: Mixed-design ANOVA</li>
+              </ul>
+              </p>
 
             <h5>Further reading</h5>
 
             <ul>
-              <li><a href="https://www.frontiersin.org/articles/10.3389/fpsyg.2013.00863/full" target="_blank">Lakens et al 2013</a>:<i> Calculating and reporting effect sizes to facilitate cumulative science: a practical primer for t-tests and ANOVAs.</i></li>
+              <li><a href="https://www.frontiersin.org/articles/10.3389/fpsyg.2013.00863/full" target="_blank">Lakens et al 2013</a>:<i> Calculating and reporting effect sizes to facilitate cumulative science: a practical primer for t-tests and
+                  ANOVAs.</i></li>
               <li><a href="https://www.nature.com/articles/nmeth.3293#t1" target="_blank">Altman et Krzywinski 2015</a>:<i> Points of Significance: Split plot design.</i></li>
             </ul>
 
