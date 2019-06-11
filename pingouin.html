@@ -285,7 +285,7 @@ sns.pointplot(data=df, x='Time', y='Scores', hue='Group', dodge=True, markers=['
 
           <pre><code class="python">import pingouin as pg
 # Compute the two-way mixed-design ANOVA
-aov = pg.mixed_anova(dv='Scores', within='Time', between='Group', data=df)
+aov = pg.mixed_anova(dv='Scores', within='Time', between='Group', subject='Subject', data=df)
 # Pretty printing of ANOVA summary
 pg.print_table(aov)
 </code></pre>
