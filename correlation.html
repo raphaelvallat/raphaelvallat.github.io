@@ -84,7 +84,7 @@
           <p>July 2019</p>
         </header>
 
-        <p align="justify">In this tutorial, you will learn how to calculate correlation between two or more variables in Python, using my very own <a href="https://pingouin-stats.org/" target="_blank">Pingouin package for Python</a>.</p>
+        <p align="justify">In this tutorial, you will learn how to calculate correlation between two or more variables in Python, using my very own <a href="https://pingouin-stats.org/" target="_blank">Pingouin package</a>.</p>
 
         <hr />
 
@@ -305,11 +305,6 @@ plt.title('Correlation matrix')</code></pre>
 </span>
 
 <p align="justify">The only issue with these functions, however, is that they do not return the p-values, but only the correlation coefficients. Here again, Pingouin has a very convenient function that will show a similar correlation matrix with the r-value on the lower triangle and p-value on the upper triangle:
-
-  <ul class="feature-icons">
-  <li class="fa-exclamation-triangle">The <a href="https://pingouin-stats.org/generated/pingouin.rcorr.html" target="_blank">rcorr</a> function was added in Pingouin version 0.2.8. Make sure that you have the latest version!</li>
-  </ul>
-
 </p>
 
 <pre><code class="python">df.rcorr(stars=False)</code></pre>
@@ -347,12 +342,6 @@ plt.title('Correlation matrix')</code></pre>
 <tr><td>N </td><td>-0.04 </td><td>-0.368</td><td>-0.344</td><td>-0.174</td><td>-  </td></tr>
 </tbody>
 </table>
-
-<hr />
-
-<p align="justify">Voilà! I hope that this tutorial was helpful. Please contact me if you have any questions or comments. And remember that we've only scratched the surface of the correlation-based functionalities that Pingouin offers. More advanced functions include partial correlation (controlling for one or more covariates), robust correlations, and adjustement of p-values after multiple comparisons. If you are interested, make sure that you have a look at the <a href="https://pingouin-stats.org/api.html">API documentation</a> of Pingouin.
-</p>
-
 
       </div>
 
